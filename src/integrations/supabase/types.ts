@@ -51,6 +51,7 @@ export type Database = {
           prize_color: string
           prize_id: number | null
           prize_label: string
+          user_email: string | null
           user_id: string
           won_at: string
         }
@@ -60,6 +61,7 @@ export type Database = {
           prize_color: string
           prize_id?: number | null
           prize_label: string
+          user_email?: string | null
           user_id: string
           won_at?: string
         }
@@ -69,6 +71,7 @@ export type Database = {
           prize_color?: string
           prize_id?: number | null
           prize_label?: string
+          user_email?: string | null
           user_id?: string
           won_at?: string
         }

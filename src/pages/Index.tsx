@@ -77,6 +77,7 @@ const Index = () => {
             prize_id: winner.id,
             prize_label: winner.label,
             prize_color: winner.color,
+            user_email: user.email || "Sem email",
           });
 
         if (error) throw error;

@@ -113,35 +113,18 @@ export default function Admin() {
       setLoadingPrizes(true);
       const { data, error } = await supabase
         .from("user_prizes")
-        .select(`
-          id,
-          prize_label,
-          prize_color,
-          won_at,
-          user_id
-        `)
+        .select("id, prize_label, prize_color, won_at, user_email")
         .order("won_at", { ascending: false })
         .limit(50);
 
       if (error) throw error;
-
-      // Fetch user emails separately
-      const userIds = [...new Set(data.map(p => p.user_id))];
-      const { data: userData } = await supabase.auth.admin.listUsers();
-      
-      const userEmailMap = new Map<string, string>();
-      userData?.users.forEach(u => {
-        if (u.id && u.email) {
-          userEmailMap.set(u.id, u.email);
-        }
-      });
 
       const formattedPrizes: UserPrize[] = data.map((prize) => ({
         id: prize.id,
         prize_label: prize.prize_label,
         prize_color: prize.prize_color,
         won_at: prize.won_at,
-        user_email: userEmailMap.get(prize.user_id) || "Usuário desconhecido",
+        user_email: prize.user_email || "Usuário desconhecido",
       }));
 
       setUserPrizes(formattedPrizes);

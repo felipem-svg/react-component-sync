@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthDialog } from "@/components/AuthDialog";
 
@@ -166,27 +165,40 @@ const Index = () => {
 
 
       {/* Roulette Section */}
-      <section id="roulette" className="relative overflow-hidden">
-        <ContainerScroll
-          titleComponent={
-            <>
-              <div className="mb-4">
-                <FlipText 
-                  word="Experimente Agora" 
-                  duration={0.5}
-                  delayMultiple={0.08}
-                  className="text-2xl sm:text-4xl md:text-6xl font-bold text-foreground"
-                  spacing="space-x-0.5 sm:space-x-1 md:space-x-2"
-                />
-              </div>
-              <p className="text-muted-foreground text-lg">
-                Gire a roleta e veja a magia acontecer!
-              </p>
-            </>
-          }
-        >
-          <RouletteWheel items={prizes} onSpinComplete={handleWinner} />
-        </ContainerScroll>
+      <section id="roulette" className="relative py-16 md:py-24 px-3 sm:px-4 overflow-hidden bg-gradient-to-b from-background via-[#311035]/30 to-background">
+        <div className="max-w-7xl mx-auto">
+          {/* Title */}
+          <motion.div 
+            className="text-center mb-12 md:mb-16"
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="mb-4">
+              <FlipText 
+                word="Experimente Agora" 
+                duration={0.5}
+                delayMultiple={0.08}
+                className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground"
+                spacing="space-x-0.5 sm:space-x-1 md:space-x-2"
+              />
+            </div>
+            <p className="text-muted-foreground text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
+              Gire a roleta e veja a magia acontecer!
+            </p>
+          </motion.div>
+
+          {/* Roulette Wheel */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, type: "spring" }}
+          >
+            <RouletteWheel items={prizes} onSpinComplete={handleWinner} />
+          </motion.div>
+        </div>
       </section>
 
       {/* About Section */}

@@ -86,55 +86,81 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-3 sm:px-4 overflow-hidden pt-16">
+      <section className="relative min-h-screen flex items-center justify-center px-3 sm:px-4 overflow-hidden pt-16">
         <div className="absolute inset-0 bg-gradient-to-br from-[#722E73]/20 via-background to-background" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#9B4B8A]/10 via-transparent to-transparent" />
-        
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center z-10 max-w-4xl mx-auto"
-        >
+
+        <div className="grid lg:grid-cols-2 gap-8 items-center z-10 max-w-6xl mx-auto w-full">
+          {/* Coluna 1: Texto */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mb-6"
-          >
-            <FlipText 
-              word="Roleta da Sorte" 
-              duration={0.5}
-              delayMultiple={0.1}
-              className="text-3xl sm:text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#722E73] via-[#9B4B8A] to-[#C2A083]"
-              spacing="space-x-0.5 sm:space-x-1 md:space-x-2"
-            />
-          </motion.div>
-          
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto"
-          >
-            A maneira mais divertida e justa de fazer sorteios, tomar decisões ou simplesmente testar sua sorte!
-          </motion.p>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
+            transition={{ duration: 0.8 }}
+            className="text-center lg:text-left order-2 lg:order-1"
           >
-            <Button
-              size="lg"
-              onClick={scrollToRoulette}
-              className="text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-shadow"
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mb-6 flex justify-center lg:justify-start"
             >
-              Girar Agora
-              <ArrowDown className="ml-2 w-5 h-5 animate-bounce" />
-            </Button>
+              <FlipText 
+                word="Roleta da Sorte" 
+                duration={0.5}
+                delayMultiple={0.1}
+                className="text-3xl sm:text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#722E73] via-[#9B4B8A] to-[#C2A083]"
+                spacing="space-x-0.5 sm:space-x-1 md:space-x-2"
+              />
+            </motion.div>
+            
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="text-xl md:text-2xl text-muted-foreground mb-8"
+            >
+              A maneira mais divertida e justa de fazer sorteios, tomar decisões ou simplesmente testar sua sorte!
+            </motion.p>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="flex justify-center lg:justify-start"
+            >
+              <Button
+                size="lg"
+                onClick={scrollToRoulette}
+                className="text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-shadow"
+              >
+                Girar Agora
+                <ArrowDown className="ml-2 w-5 h-5 animate-bounce" />
+              </Button>
+            </motion.div>
           </motion.div>
-        </motion.div>
+
+          {/* Coluna 2: Imagem */}
+          <motion.div
+            className="order-1 lg:order-2 flex justify-center"
+            initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ duration: 1, delay: 0.8 }}
+          >
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              className="relative"
+            >
+              <img
+                src="/owner-photo.jpg"
+                alt="Criadora da Roleta da Sorte"
+                className="w-64 h-64 md:w-80 md:h-80 rounded-full object-cover border-4 border-[#C2A083] ring-4 ring-[#9B4B8A]/30 shadow-2xl shadow-[#722E73]/50"
+              />
+              {/* Glow effect */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#9B4B8A]/20 to-[#C2A083]/20 blur-xl -z-10" />
+            </motion.div>
+          </motion.div>
+        </div>
 
         <motion.div
           initial={{ opacity: 0 }}
@@ -175,6 +201,72 @@ const Index = () => {
         >
           <RouletteWheel items={prizes} onSpinComplete={handleWinner} />
         </ContainerScroll>
+      </section>
+
+      {/* About Section */}
+      <section className="py-20 px-3 sm:px-4 bg-gradient-to-br from-[#311035] via-[#722E73]/10 to-[#311035]">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="grid lg:grid-cols-2 gap-12 items-center"
+          >
+            {/* Imagem */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+              className="flex justify-center lg:justify-start"
+            >
+              <div className="relative">
+                <img
+                  src="/owner-photo.jpg"
+                  alt="Criadora"
+                  className="w-80 h-96 md:w-96 md:h-[28rem] rounded-2xl object-cover border-4 border-[#C2A083] shadow-2xl shadow-[#722E73]/50"
+                />
+                <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-gradient-to-br from-[#9B4B8A] to-[#722E73] rounded-full blur-3xl opacity-50" />
+              </div>
+            </motion.div>
+
+            {/* Texto */}
+            <div className="text-center lg:text-left">
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
+                  Conheça Quem Criou{" "}
+                  <span className="bg-gradient-to-r from-[#9B4B8A] to-[#C2A083] bg-clip-text text-transparent">
+                    Tudo Isso
+                  </span>
+                </h2>
+                <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
+                  Olá! Sou a criadora da Roleta da Sorte. 
+                  Minha missão é trazer diversão e justiça para sorteios 
+                  e decisões do dia a dia. Com paixão por tecnologia e 
+                  design, criei esta plataforma para tornar cada giro 
+                  uma experiência mágica! ✨
+                </p>
+                <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                  <div className="flex items-center gap-2 bg-[#722E73]/20 px-4 py-2 rounded-full border border-[#9B4B8A]/30">
+                    <span className="text-2xl">🎯</span>
+                    <span className="text-sm text-foreground">Sorteios Justos</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-[#722E73]/20 px-4 py-2 rounded-full border border-[#9B4B8A]/30">
+                    <span className="text-2xl">✨</span>
+                    <span className="text-sm text-foreground">Design Mágico</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-[#722E73]/20 px-4 py-2 rounded-full border border-[#9B4B8A]/30">
+                    <span className="text-2xl">💜</span>
+                    <span className="text-sm text-foreground">Feito com Amor</span>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* Rewards Section */}
@@ -238,9 +330,25 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-4 border-t border-border">
-        <div className="max-w-6xl mx-auto text-center text-muted-foreground">
-          <p>© 2024 Roleta da Sorte. Desenvolvido com ❤️ usando React e Framer Motion.</p>
+      <footer className="py-8 px-4 border-t border-border bg-[#311035]/80">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <img
+                src="/owner-photo.jpg"
+                alt="Criadora"
+                className="w-10 h-10 rounded-full object-cover border-2 border-[#C2A083]"
+              />
+              <p className="text-muted-foreground text-sm">
+                © 2024 Roleta da Sorte • Criado com ❤️
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-xs text-muted-foreground">
+                Desenvolvido com React e Framer Motion
+              </span>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

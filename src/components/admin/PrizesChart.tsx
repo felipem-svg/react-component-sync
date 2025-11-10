@@ -10,7 +10,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   Legend,
   ResponsiveContainer,
 } from "recharts";
@@ -88,7 +87,6 @@ export const PrizesChart = ({ userPrizes }: PrizesChartProps) => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" />
             <YAxis />
-            <Tooltip />
             <Legend />
             <Line
               type="monotone"
@@ -123,7 +121,6 @@ export const PrizesChart = ({ userPrizes }: PrizesChartProps) => {
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip />
           </PieChart>
         </ResponsiveContainer>
       </Card>
@@ -135,7 +132,6 @@ export const PrizesChart = ({ userPrizes }: PrizesChartProps) => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="email" />
             <YAxis />
-            <Tooltip />
             <Legend />
             <Bar dataKey="prêmios" fill="hsl(var(--primary))" />
           </BarChart>

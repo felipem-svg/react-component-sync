@@ -270,19 +270,6 @@ export function RouletteWheel({
                 filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))'
               }}
             />
-            
-            {/* Star icon in center */}
-            <text 
-              x="200" 
-              y="220" 
-              fontSize="36" 
-              textAnchor="middle"
-              style={{
-                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
-              }}
-            >
-              ⭐
-            </text>
           </motion.svg>
         </div>
       </motion.div>

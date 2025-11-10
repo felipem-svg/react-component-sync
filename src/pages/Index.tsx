@@ -4,6 +4,7 @@ import { RouletteWheel } from "@/components/RouletteWheel";
 import { FlipText } from "@/components/ui/flip-text";
 import { Navbar } from "@/components/Navbar";
 import { Prize } from "@/components/PrizeCustomizer";
+import RouletteRewards from "@/components/RouletteRewards";
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -176,7 +177,40 @@ const Index = () => {
         </ContainerScroll>
       </section>
 
-
+      {/* Rewards Section */}
+      <section className="py-20 px-3 sm:px-4 bg-muted/30">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <div className="mb-4">
+              <FlipText 
+                word="Recompensas da Roleta" 
+                duration={0.5}
+                delayMultiple={0.08}
+                className="text-2xl sm:text-4xl md:text-6xl font-bold text-foreground"
+                spacing="space-x-0.5 sm:space-x-1 md:space-x-2"
+              />
+            </div>
+            <p className="text-muted-foreground text-lg">
+              Descubra os incríveis prêmios que você pode ganhar! Arraste para explorar.
+            </p>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="flex justify-center"
+          >
+            <RouletteRewards />
+          </motion.div>
+        </div>
+      </section>
 
       {/* Final CTA */}
       <section className="py-20 px-3 sm:px-4 bg-muted/30">

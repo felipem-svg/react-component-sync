@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { FlipText } from "@/components/ui/flip-text";
 import Confetti from "react-confetti";
 import { useWindowSize } from "@/hooks/useWindowSize";
+import { CountdownTimer } from "@/components/CountdownTimer";
 
 interface RouletteItem {
   id: number;
@@ -20,6 +21,7 @@ interface RouletteWheelProps {
   className?: string;
   disabled?: boolean;
   disabledReason?: string | null;
+  nextAvailable?: string | null;
 }
 
 const getColorLight = (color: string) => {
@@ -91,6 +93,7 @@ export function RouletteWheel({
   className,
   disabled = false,
   disabledReason = null,
+  nextAvailable = null,
 }: RouletteWheelProps) {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -319,9 +322,12 @@ export function RouletteWheel({
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center text-sm bg-destructive/10 text-destructive px-4 py-3 rounded-lg border border-destructive/20 max-w-md"
+            className="text-center space-y-3"
           >
-            {disabledReason}
+            <div className="text-sm bg-destructive/10 text-destructive px-4 py-3 rounded-lg border border-destructive/20 max-w-md">
+              {disabledReason}
+            </div>
+            {nextAvailable && <CountdownTimer targetDate={nextAvailable} />}
           </motion.div>
         )}
       </div>

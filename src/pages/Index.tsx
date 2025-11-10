@@ -18,6 +18,7 @@ const Index = () => {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [canSpin, setCanSpin] = useState(true);
   const [spinBlockReason, setSpinBlockReason] = useState<string | null>(null);
+  const [nextAvailable, setNextAvailable] = useState<string | null>(null);
   const [checkingSpinPermission, setCheckingSpinPermission] = useState(false);
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -54,6 +55,7 @@ const Index = () => {
       const result = data as { can_spin: boolean; reason: string | null; next_available: string | null };
       setCanSpin(result.can_spin);
       setSpinBlockReason(result.reason);
+      setNextAvailable(result.next_available);
     } catch (error) {
       console.error('Error checking spin permission:', error);
       setCanSpin(true);
@@ -279,6 +281,7 @@ const Index = () => {
               onSpinComplete={handleWinner}
               disabled={!canSpin || checkingSpinPermission}
               disabledReason={spinBlockReason}
+              nextAvailable={nextAvailable}
             />
           </motion.div>
         </div>

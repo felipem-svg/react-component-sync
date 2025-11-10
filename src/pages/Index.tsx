@@ -86,7 +86,7 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-3 sm:px-4 overflow-hidden pt-16">
+      <section className="relative py-20 md:py-28 flex items-center justify-center px-3 sm:px-4 overflow-hidden pt-16">
         <div className="absolute inset-0 bg-gradient-to-br from-[#722E73]/20 via-background to-background" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#9B4B8A]/10 via-transparent to-transparent" />
 
@@ -162,20 +162,6 @@ const Index = () => {
           </motion.div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="text-muted-foreground"
-          >
-            <ArrowDown className="w-6 h-6" />
-          </motion.div>
-        </motion.div>
       </section>
 
 

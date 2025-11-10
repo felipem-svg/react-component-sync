@@ -3,16 +3,20 @@ import { useEffect, useState } from "react";
 
 const RouletteRewards = () => {
   const [containerSize, setContainerSize] = useState(600);
+  const [imageScale, setImageScale] = useState(0.18);
 
-  // Adjust container size based on screen width
+  // Adjust container size and image scale based on screen width
   useEffect(() => {
     const updateSize = () => {
       if (window.innerWidth < 640) {
         setContainerSize(350);
+        setImageScale(0.22);
       } else if (window.innerWidth < 1024) {
         setContainerSize(500);
+        setImageScale(0.20);
       } else {
         setContainerSize(600);
+        setImageScale(0.18);
       }
     };
 
@@ -85,12 +89,12 @@ const RouletteRewards = () => {
       <SphereImageGrid
         images={REWARDS}
         containerSize={containerSize}
-        sphereRadius={containerSize * 0.35}
+        sphereRadius={containerSize * 0.38}
         dragSensitivity={0.8}
         momentumDecay={0.96}
         maxRotationSpeed={6}
-        baseImageScale={0.15}
-        hoverScale={1.3}
+        baseImageScale={imageScale}
+        hoverScale={1.4}
         perspective={1000}
         autoRotate={true}
         autoRotateSpeed={0.25}

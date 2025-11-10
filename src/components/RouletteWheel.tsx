@@ -20,30 +20,30 @@ interface RouletteWheelProps {
 
 const getColorLight = (color: string) => {
   const colors: { [key: string]: string } = {
-    "bg-red-500": "#ef4444",
-    "bg-blue-500": "#3b82f6",
-    "bg-green-500": "#22c55e",
-    "bg-yellow-500": "#eab308",
-    "bg-purple-500": "#a855f7",
-    "bg-pink-500": "#ec4899",
-    "bg-orange-500": "#f97316",
-    "bg-teal-500": "#14b8a6",
+    "bg-red-500": "#94a3b8",      // Cinza azulado claro
+    "bg-blue-500": "#8b9eb8",     // Azul cinza
+    "bg-green-500": "#9ca986",    // Verde sálvia
+    "bg-yellow-500": "#d6bcb1",   // Bege/areia
+    "bg-purple-500": "#b4a7d6",   // Lavanda suave
+    "bg-pink-500": "#d4a5a5",     // Rosa pastel
+    "bg-orange-500": "#c9a77c",   // Terracota suave
+    "bg-teal-500": "#a8c5b8",     // Verde menta claro
   };
-  return colors[color] || "#ef4444";
+  return colors[color] || "#94a3b8";
 };
 
 const getColorDark = (color: string) => {
   const colors: { [key: string]: string } = {
-    "bg-red-500": "#b91c1c",
-    "bg-blue-500": "#1e40af",
-    "bg-green-500": "#15803d",
-    "bg-yellow-500": "#a16207",
-    "bg-purple-500": "#7e22ce",
-    "bg-pink-500": "#be185d",
-    "bg-orange-500": "#c2410c",
-    "bg-teal-500": "#0f766e",
+    "bg-red-500": "#475569",      // Cinza azulado escuro
+    "bg-blue-500": "#5c6f8a",     // Azul cinza escuro
+    "bg-green-500": "#6b7b5e",    // Verde sálvia escuro
+    "bg-yellow-500": "#a78a7f",   // Bege/marrom quente
+    "bg-purple-500": "#8b7fb5",   // Lavanda médio
+    "bg-pink-500": "#a87c7c",     // Rosa profundo
+    "bg-orange-500": "#a08060",   // Terracota médio
+    "bg-teal-500": "#7a9b8e",     // Verde menta escuro
   };
-  return colors[color] || "#b91c1c";
+  return colors[color] || "#475569";
 };
 
 const createSegmentPath = (index: number, total: number, radius: number = 200) => {
@@ -149,25 +149,25 @@ export function RouletteWheel({
         {/* Premium Pointer */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-6 z-20">
           <div className="relative">
-            <div className="w-0 h-0 border-l-[26px] border-l-transparent border-r-[26px] border-r-transparent border-t-[52px] border-t-amber-400 drop-shadow-2xl" 
+            <div className="w-0 h-0 border-l-[26px] border-l-transparent border-r-[26px] border-r-transparent border-t-[52px] border-t-slate-400 drop-shadow-2xl" 
               style={{
-                filter: 'drop-shadow(0 4px 12px rgba(251, 191, 36, 0.6))'
+                filter: 'drop-shadow(0 4px 12px rgba(148, 163, 184, 0.6))'
               }}
             />
-            <div className="absolute inset-0 w-0 h-0 border-l-[26px] border-l-transparent border-r-[26px] border-r-transparent border-t-[52px] border-t-yellow-300 opacity-40 blur-sm" />
+            <div className="absolute inset-0 w-0 h-0 border-l-[26px] border-l-transparent border-r-[26px] border-r-transparent border-t-[52px] border-t-slate-300 opacity-40 blur-sm" />
           </div>
         </div>
 
         {/* Decorative Outer Ring */}
-        <div className="absolute inset-0 rounded-full border-[10px] border-double border-amber-400/60 -m-2 shadow-2xl" />
+        <div className="absolute inset-0 rounded-full border-[10px] border-double border-slate-400/60 -m-2 shadow-2xl" />
 
         {/* Wheel Container */}
         <div className="relative w-[320px] h-[320px] sm:w-[420px] sm:h-[420px] lg:w-[500px] lg:h-[500px]">
-          <motion.svg
-            viewBox="0 0 400 400"
-            className="w-full h-full rounded-full shadow-2xl border-8 border-amber-500"
+      <motion.svg
+        viewBox="0 0 400 400"
+        className="w-full h-full rounded-full shadow-2xl border-8 border-slate-400"
             style={{
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(251, 191, 36, 0.2)'
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(148, 163, 184, 0.2)'
             }}
             animate={{ 
               rotate: rotation
@@ -236,7 +236,7 @@ export function RouletteWheel({
               cy="200" 
               r="50" 
               fill="url(#center-gradient)" 
-              stroke="#fbbf24" 
+              stroke="#94a3b8" 
               strokeWidth="6"
               style={{
                 filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))'

@@ -128,12 +128,13 @@ export function RouletteWheel({
                   }}
                 >
                   <div
-                    className="absolute top-[20%] left-1/2 -translate-x-1/2 text-white font-bold text-xs sm:text-sm md:text-base whitespace-nowrap"
+                    className="absolute top-[35%] left-1/2 -translate-x-1/2 text-4xl sm:text-5xl lg:text-6xl"
                     style={{
                       transform: `translateX(-50%) rotate(${segmentAngle / 2}deg)`,
+                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
                     }}
                   >
-                    {item.label}
+                    🎁
                   </div>
                 </div>
               );

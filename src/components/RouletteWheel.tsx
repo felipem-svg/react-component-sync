@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Play, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FlipText } from "@/components/ui/flip-text";
 
 interface RouletteItem {
   id: number;
@@ -154,8 +155,15 @@ export function RouletteWheel({
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             className="text-center"
           >
-            <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4 animate-pulse">
-              🎉 Parabéns! 🎉
+            <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
+              <span className="text-3xl sm:text-4xl lg:text-5xl">🎉</span>
+              <FlipText 
+                word="Parabéns" 
+                duration={0.3}
+                delayMultiple={0.1}
+                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground"
+              />
+              <span className="text-3xl sm:text-4xl lg:text-5xl">🎉</span>
             </div>
             <motion.div
               animate={{ scale: [1, 1.05, 1] }}

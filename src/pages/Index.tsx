@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { RouletteWheel } from "@/components/RouletteWheel";
+import { FlipText } from "@/components/ui/flip-text";
 import { FeatureCard } from "@/components/FeatureCard";
 import { HowItWorksStep } from "@/components/HowItWorksStep";
 import { StatsCounter } from "@/components/StatsCounter";
@@ -96,14 +97,19 @@ const Index = () => {
           transition={{ duration: 0.8 }}
           className="text-center z-10 max-w-4xl mx-auto"
         >
-          <motion.h1
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold text-foreground mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary"
+            className="mb-6"
           >
-            Roleta da Sorte
-          </motion.h1>
+            <FlipText 
+              word="Roleta da Sorte" 
+              duration={0.5}
+              delayMultiple={0.1}
+              className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary"
+            />
+          </motion.div>
           
           <motion.p
             initial={{ opacity: 0 }}
@@ -155,9 +161,14 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Por Que Escolher Nossa Roleta?
-            </h2>
+            <div className="mb-4">
+              <FlipText 
+                word="Por Que Escolher Nossa Roleta?" 
+                duration={0.4}
+                delayMultiple={0.05}
+                className="text-4xl md:text-5xl font-bold text-foreground"
+              />
+            </div>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Tecnologia de ponta combinada com design moderno para uma experiência única
             </p>
@@ -197,9 +208,14 @@ const Index = () => {
         <ContainerScroll
           titleComponent={
             <>
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-foreground mb-4">
-                Experimente Agora
-              </h1>
+              <div className="mb-4">
+                <FlipText 
+                  word="Experimente Agora" 
+                  duration={0.5}
+                  delayMultiple={0.08}
+                  className="text-3xl sm:text-5xl md:text-6xl font-bold text-foreground"
+                />
+              </div>
               <p className="text-muted-foreground text-lg">
                 Gire a roleta e veja a magia acontecer!
               </p>
@@ -219,9 +235,14 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Como Funciona
-            </h2>
+            <div className="mb-4">
+              <FlipText 
+                word="Como Funciona" 
+                duration={0.4}
+                delayMultiple={0.06}
+                className="text-4xl md:text-5xl font-bold text-foreground"
+              />
+            </div>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Três passos simples para girar e ganhar
             </p>
@@ -260,9 +281,14 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Números Que Impressionam
-            </h2>
+            <div className="mb-4">
+              <FlipText 
+                word="Números Que Impressionam" 
+                duration={0.4}
+                delayMultiple={0.05}
+                className="text-4xl md:text-5xl font-bold text-foreground"
+              />
+            </div>
           </motion.div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">

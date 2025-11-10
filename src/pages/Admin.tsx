@@ -5,6 +5,7 @@ import { PrizeCustomizer } from "@/components/PrizeCustomizer";
 import { RouletteWheel } from "@/components/RouletteWheel";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { FlipText } from "@/components/ui/flip-text";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Prize {
@@ -117,9 +118,14 @@ export default function Admin() {
           className="space-y-8"
         >
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-foreground mb-2">
-              Painel Administrativo
-            </h1>
+            <div className="mb-2">
+              <FlipText 
+                word="Painel Administrativo" 
+                duration={0.5}
+                delayMultiple={0.06}
+                className="text-4xl font-bold text-foreground"
+              />
+            </div>
             <p className="text-muted-foreground">
               Gerencie os prêmios da roleta
             </p>

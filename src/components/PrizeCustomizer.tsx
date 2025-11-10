@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Settings, Plus, Trash2, Edit2, Save, X } from "lucide-react";
+import { Settings, Plus, Trash2, Edit2, Save, X, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 
@@ -34,7 +34,7 @@ const prizeSchema = z.object({
     .min(1, "Nome do prêmio é obrigatório")
     .max(50, "Nome deve ter no máximo 50 caracteres"),
   color: z.string().regex(/^bg-gradient-to-br from-\w+-\d+ to-\w+-\d+$/, "Formato de cor inválido"),
-  weight: z.number().int().min(1, "Peso mínimo é 1").max(100, "Peso máximo é 100"),
+  weight: z.number().int().min(1, "Peso mínimo é 1").max(1000000, "Peso máximo é 1.000.000"),
 });
 
 const colorOptions = [
@@ -57,9 +57,24 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
   const [errors, setErrors] = useState<{ label?: string; color?: string; weight?: string }>({});
   const { toast } = useToast();
 
-  const calculatePercentage = (weight: number) => {
+  const calculatePercentage = (weight: number, showDecimals: boolean = false) => {
     const totalWeight = prizes.reduce((sum, p) => sum + p.weight, 0) + weight;
-    return totalWeight > 0 ? Math.round((weight / totalWeight) * 100) : 0;
+    if (totalWeight === 0) return "0";
+    
+    const percentage = (weight / totalWeight) * 100;
+    
+    // Se for muito pequeno, mostrar com mais decimais
+    if (percentage < 1 && showDecimals) {
+      return percentage.toFixed(4);
+    }
+    
+    // Se for pequeno mas não minúsculo, mostrar 2 decimais
+    if (percentage < 10) {
+      return percentage.toFixed(2);
+    }
+    
+    // Caso contrário, arredondar
+    return Math.round(percentage).toString();
   };
 
   const validatePrize = (label: string, color: string, weight: number) => {
@@ -175,6 +190,24 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
           </DialogDescription>
         </DialogHeader>
 
+        {/* Painel de Ajuda */}
+        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+          <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+            <Info className="w-4 h-4" />
+            Como funciona o sistema de pesos?
+          </h4>
+          <div className="text-xs text-muted-foreground space-y-1">
+            <p>• <strong>Peso maior = maior chance</strong> de ser sorteado</p>
+            <p>• A porcentagem é calculada automaticamente baseada no peso total</p>
+            <p className="pt-2 font-medium">Exemplos práticos:</p>
+            <ul className="pl-4 space-y-1">
+              <li>✓ 5 prêmios com peso <strong>1</strong> + 1 prêmio com peso <strong>95</strong> = 1% vs 95%</li>
+              <li>✓ Peso <strong>10.000</strong> vs peso <strong>1</strong> = 99.99% vs 0.01%</li>
+              <li>✓ Todos com peso <strong>100</strong> = chances iguais</li>
+            </ul>
+          </div>
+        </div>
+
         <div className="space-y-6 py-4">
           {/* Add New Prize */}
           <div className="space-y-4 p-4 border border-border rounded-lg bg-muted/30">
@@ -205,7 +238,7 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
                 <Label htmlFor="new-prize-weight">
                   Peso / Probabilidade 
                   <span className="text-xs text-muted-foreground ml-2">
-                    (1-100, maior = mais chance)
+                    (1-1.000.000)
                   </span>
                 </Label>
                 <div className="flex items-center gap-3">
@@ -213,7 +246,7 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
                     id="new-prize-weight"
                     type="number"
                     min="1"
-                    max="100"
+                    max="1000000"
                     value={newPrize.weight}
                     onChange={(e) => {
                       setNewPrize({ ...newPrize, weight: parseInt(e.target.value) || 1 });
@@ -229,7 +262,11 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
                       />
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      ~{calculatePercentage(newPrize.weight)}% de chance
+                      {parseFloat(calculatePercentage(newPrize.weight, true)) < 1 ? (
+                        <>{calculatePercentage(newPrize.weight, true)}% (muito raro)</>
+                      ) : (
+                        <>{calculatePercentage(newPrize.weight)}% de chance</>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -347,7 +384,7 @@ interface EditPrizeFormProps {
   onCancel: () => void;
   errors: { label?: string; color?: string; weight?: string };
   onErrorsClear: () => void;
-  calculatePercentage: (weight: number) => number;
+  calculatePercentage: (weight: number, showDecimals?: boolean) => string;
 }
 
 const EditPrizeForm = ({
@@ -384,13 +421,16 @@ const EditPrizeForm = ({
       <div className="space-y-2">
         <Label htmlFor={`edit-weight-${prize.id}`}>
           Peso / Probabilidade
+          <span className="text-xs text-muted-foreground ml-2">
+            (1-1.000.000)
+          </span>
         </Label>
         <div className="flex items-center gap-3">
           <Input
             id={`edit-weight-${prize.id}`}
             type="number"
             min="1"
-            max="100"
+            max="1000000"
             value={weight}
             onChange={(e) => {
               setWeight(parseInt(e.target.value) || 1);
@@ -406,7 +446,11 @@ const EditPrizeForm = ({
               />
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              ~{calculatePercentage(weight)}% de chance
+              {parseFloat(calculatePercentage(weight, true)) < 1 ? (
+                <>{calculatePercentage(weight, true)}% (muito raro)</>
+              ) : (
+                <>{calculatePercentage(weight)}% de chance</>
+              )}
             </p>
           </div>
         </div>

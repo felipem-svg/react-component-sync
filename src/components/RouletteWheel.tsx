@@ -217,14 +217,42 @@ export function RouletteWheel({
                     width="80"
                     height="80"
                   >
-                    <div 
+                    <motion.div 
                       className="w-full h-full rounded-full bg-white/95 flex items-center justify-center shadow-lg border-2 border-white/40"
                       style={{
                         filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))'
                       }}
+                      animate={isSpinning ? {
+                        scale: [1, 1.15, 1],
+                        rotate: [0, 10, -10, 0],
+                      } : {
+                        scale: 1,
+                        rotate: 0
+                      }}
+                      transition={{
+                        duration: 0.6,
+                        repeat: isSpinning ? Infinity : 0,
+                        delay: index * 0.1,
+                        ease: "easeInOut"
+                      }}
                     >
-                      <span className="text-5xl">🎁</span>
-                    </div>
+                      <motion.span 
+                        className="text-5xl"
+                        animate={isSpinning ? {
+                          rotate: [0, -15, 15, 0],
+                        } : {
+                          rotate: 0
+                        }}
+                        transition={{
+                          duration: 0.4,
+                          repeat: isSpinning ? Infinity : 0,
+                          delay: index * 0.1 + 0.2,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        🎁
+                      </motion.span>
+                    </motion.div>
                   </foreignObject>
                 </g>
               );

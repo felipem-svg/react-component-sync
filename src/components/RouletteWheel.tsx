@@ -18,18 +18,58 @@ interface RouletteWheelProps {
   className?: string;
 }
 
-const getColorGradient = (color: string) => {
-  const gradients: { [key: string]: string } = {
-    "bg-red-500": "radial-gradient(circle at 35% 35%, #ef4444, #b91c1c)",
-    "bg-blue-500": "radial-gradient(circle at 35% 35%, #3b82f6, #1e40af)",
-    "bg-green-500": "radial-gradient(circle at 35% 35%, #22c55e, #15803d)",
-    "bg-yellow-500": "radial-gradient(circle at 35% 35%, #eab308, #a16207)",
-    "bg-purple-500": "radial-gradient(circle at 35% 35%, #a855f7, #7e22ce)",
-    "bg-pink-500": "radial-gradient(circle at 35% 35%, #ec4899, #be185d)",
-    "bg-orange-500": "radial-gradient(circle at 35% 35%, #f97316, #c2410c)",
-    "bg-teal-500": "radial-gradient(circle at 35% 35%, #14b8a6, #0f766e)",
+const getColorLight = (color: string) => {
+  const colors: { [key: string]: string } = {
+    "bg-red-500": "#ef4444",
+    "bg-blue-500": "#3b82f6",
+    "bg-green-500": "#22c55e",
+    "bg-yellow-500": "#eab308",
+    "bg-purple-500": "#a855f7",
+    "bg-pink-500": "#ec4899",
+    "bg-orange-500": "#f97316",
+    "bg-teal-500": "#14b8a6",
   };
-  return gradients[color] || gradients["bg-red-500"];
+  return colors[color] || "#ef4444";
+};
+
+const getColorDark = (color: string) => {
+  const colors: { [key: string]: string } = {
+    "bg-red-500": "#b91c1c",
+    "bg-blue-500": "#1e40af",
+    "bg-green-500": "#15803d",
+    "bg-yellow-500": "#a16207",
+    "bg-purple-500": "#7e22ce",
+    "bg-pink-500": "#be185d",
+    "bg-orange-500": "#c2410c",
+    "bg-teal-500": "#0f766e",
+  };
+  return colors[color] || "#b91c1c";
+};
+
+const createSegmentPath = (index: number, total: number, radius: number = 200) => {
+  const angle = (360 / total) * (Math.PI / 180);
+  const startAngle = index * angle - Math.PI / 2;
+  const endAngle = (index + 1) * angle - Math.PI / 2;
+  
+  const x1 = radius + radius * Math.cos(startAngle);
+  const y1 = radius + radius * Math.sin(startAngle);
+  const x2 = radius + radius * Math.cos(endAngle);
+  const y2 = radius + radius * Math.sin(endAngle);
+  
+  const largeArcFlag = angle > Math.PI ? 1 : 0;
+  
+  return `M ${radius} ${radius} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+};
+
+const getGiftPosition = (index: number, total: number, radius: number = 200) => {
+  const angle = (360 / total) * (Math.PI / 180);
+  const middleAngle = (index + 0.5) * angle - Math.PI / 2;
+  const distance = radius * 0.65;
+  
+  return {
+    x: radius + distance * Math.cos(middleAngle) - 40,
+    y: radius + distance * Math.sin(middleAngle) - 40
+  };
 };
 
 export function RouletteWheel({
@@ -122,76 +162,100 @@ export function RouletteWheel({
         <div className="absolute inset-0 rounded-full border-[10px] border-double border-amber-400/60 -m-2 shadow-2xl" />
 
         {/* Wheel Container */}
-        <div className="relative w-[320px] h-[320px] sm:w-[420px] sm:h-[420px] lg:w-[500px] lg:h-[500px] rounded-full shadow-2xl overflow-hidden border-8 border-amber-500"
-          style={{
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(251, 191, 36, 0.2), inset 0 2px 8px rgba(0, 0, 0, 0.2)'
-          }}
-        >
-          <motion.div
-            className="w-full h-full relative"
+        <div className="relative w-[320px] h-[320px] sm:w-[420px] sm:h-[420px] lg:w-[500px] lg:h-[500px]">
+          <motion.svg
+            viewBox="0 0 400 400"
+            className="w-full h-full rounded-full shadow-2xl border-8 border-amber-500"
+            style={{
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(251, 191, 36, 0.2)'
+            }}
             animate={{ 
-              rotate: rotation,
-              filter: isSpinning ? "blur(0.5px)" : "blur(0px)"
+              rotate: rotation
             }}
             transition={{
               duration: 4,
               ease: [0.17, 0.67, 0.12, 0.99],
             }}
           >
+            {/* Background circle */}
+            <circle cx="200" cy="200" r="200" fill="#ffffff" />
+            
+            {/* Gradients definitions */}
+            <defs>
+              {items.map((item, i) => (
+                <radialGradient key={`grad-${i}`} id={`gradient-${i}`} cx="35%" cy="35%">
+                  <stop offset="0%" stopColor={getColorLight(item.color)} />
+                  <stop offset="100%" stopColor={getColorDark(item.color)} />
+                </radialGradient>
+              ))}
+              <radialGradient id="center-gradient" cx="40%" cy="40%">
+                <stop offset="0%" stopColor="#ffffff" />
+                <stop offset="100%" stopColor="#f3f4f6" />
+              </radialGradient>
+            </defs>
+            
+            {/* Segments */}
             {items.map((item, index) => {
-              const angle = segmentAngle * index;
+              const giftPos = getGiftPosition(index, items.length, 200);
               return (
-                <React.Fragment key={item.id}>
-                  {/* Segment */}
-                  <div
-                    className="absolute w-full h-full origin-center"
+                <g key={item.id}>
+                  {/* Colored segment */}
+                  <path
+                    d={createSegmentPath(index, items.length, 200)}
+                    fill={`url(#gradient-${index})`}
+                    stroke="white"
+                    strokeWidth="3"
                     style={{
-                      transform: `rotate(${angle}deg)`,
-                      clipPath: `polygon(50% 50%, 50% 0%, ${
-                        50 + 50 * Math.sin((segmentAngle * Math.PI) / 180)
-                      }% ${50 - 50 * Math.cos((segmentAngle * Math.PI) / 180)}%)`,
-                      background: getColorGradient(item.color),
-                      boxShadow: 'inset 0 2px 8px rgba(0, 0, 0, 0.2)'
-                    }}
-                  >
-                    {/* Gift Icon with circular background */}
-                    <div
-                      className="absolute top-[20%] left-1/2 -translate-x-1/2"
-                      style={{
-                        transform: `translateX(-50%) rotate(${segmentAngle / 2}deg)`,
-                      }}
-                    >
-                      <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full bg-white/95 flex items-center justify-center shadow-lg border-2 border-white/40">
-                        <span className="text-3xl sm:text-4xl lg:text-5xl" style={{
-                          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-                        }}>🎁</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Segment Separator */}
-                  <div 
-                    className="absolute w-full h-1/2 top-0 left-1/2 origin-bottom border-r-[3px] border-white/40"
-                    style={{ 
-                      transform: `rotate(${angle}deg)`,
-                      pointerEvents: 'none'
+                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))'
                     }}
                   />
-                </React.Fragment>
+                  
+                  {/* Gift icon in foreignObject */}
+                  <foreignObject
+                    x={giftPos.x}
+                    y={giftPos.y}
+                    width="80"
+                    height="80"
+                  >
+                    <div 
+                      className="w-full h-full rounded-full bg-white/95 flex items-center justify-center shadow-lg border-2 border-white/40"
+                      style={{
+                        filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))'
+                      }}
+                    >
+                      <span className="text-5xl">🎁</span>
+                    </div>
+                  </foreignObject>
+                </g>
               );
             })}
-          </motion.div>
-
-          {/* Premium Center Circle */}
-          <div 
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full border-4 sm:border-5 lg:border-6 border-amber-400 z-10 flex items-center justify-center"
-            style={{
-              background: 'radial-gradient(circle at 40% 40%, #ffffff, #f3f4f6)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 2px 8px rgba(255, 255, 255, 0.8)'
-            }}
-          >
-            <span className="text-2xl sm:text-3xl lg:text-4xl">⭐</span>
-          </div>
+            
+            {/* Center circle - must be last for proper z-index */}
+            <circle 
+              cx="200" 
+              cy="200" 
+              r="50" 
+              fill="url(#center-gradient)" 
+              stroke="#fbbf24" 
+              strokeWidth="6"
+              style={{
+                filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))'
+              }}
+            />
+            
+            {/* Star icon in center */}
+            <text 
+              x="200" 
+              y="220" 
+              fontSize="36" 
+              textAnchor="middle"
+              style={{
+                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+              }}
+            >
+              ⭐
+            </text>
+          </motion.svg>
         </div>
       </motion.div>
 

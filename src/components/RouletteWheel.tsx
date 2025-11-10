@@ -61,13 +61,14 @@ export function RouletteWheel({
       }
     }
 
-    // Calcular rotação para parar no item selecionado
+    // Calcular rotação correta para parar no item selecionado
+    // O pointer está no topo (0°) - alinhamos o centro do segmento vencedor com ele
+    const segmentCenterAngle = selectedIndex * segmentAngle + (segmentAngle / 2);
     const spins = 5 + Math.random() * 3; // 5-8 voltas completas
-    const targetAngle = selectedIndex * segmentAngle + (segmentAngle / 2);
-    const randomOffset = (Math.random() - 0.5) * (segmentAngle * 0.5); // Variação dentro do segmento
-    const totalRotation = spins * 360 + (360 - targetAngle) + randomOffset;
+    const finalAngle = 360 - segmentCenterAngle;
+    const totalRotation = rotation + (spins * 360) + finalAngle;
 
-    setRotation(rotation + totalRotation);
+    setRotation(totalRotation);
 
     setTimeout(() => {
       const winningItem = items[selectedIndex];

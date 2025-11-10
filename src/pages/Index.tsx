@@ -2,13 +2,10 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { RouletteWheel } from "@/components/RouletteWheel";
 import { FlipText } from "@/components/ui/flip-text";
-import { FeatureCard } from "@/components/FeatureCard";
-import { HowItWorksStep } from "@/components/HowItWorksStep";
-import { StatsCounter } from "@/components/StatsCounter";
 import { Navbar } from "@/components/Navbar";
 import { Prize } from "@/components/PrizeCustomizer";
 import { Button } from "@/components/ui/button";
-import { Target, Zap, Palette, PartyPopper, ArrowDown } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
@@ -153,57 +150,6 @@ const Index = () => {
         </motion.div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 px-3 sm:px-4 bg-muted/30 overflow-x-hidden">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <div className="mb-4">
-              <FlipText 
-                word="Por Que Escolher Nossa Roleta?" 
-                duration={0.4}
-                delayMultiple={0.05}
-                className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground"
-                spacing="space-x-0.5 sm:space-x-1"
-              />
-            </div>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Tecnologia de ponta combinada com design moderno para uma experiência única
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <FeatureCard
-              icon={Target}
-              title="Totalmente Aleatório"
-              description="Algoritmo justo e transparente que garante resultados 100% aleatórios"
-              delay={0.1}
-            />
-            <FeatureCard
-              icon={Zap}
-              title="Rápido e Fácil"
-              description="Interface intuitiva que permite girar a roleta com apenas um clique"
-              delay={0.2}
-            />
-            <FeatureCard
-              icon={Palette}
-              title="Visual Moderno"
-              description="Design elegante e responsivo que funciona perfeitamente em qualquer dispositivo"
-              delay={0.3}
-            />
-            <FeatureCard
-              icon={PartyPopper}
-              title="Diversão Garantida"
-              description="Perfeito para sorteios, tomada de decisões ou simplesmente se divertir"
-              delay={0.4}
-            />
-          </div>
-        </div>
-      </section>
 
       {/* Roulette Section */}
       <section id="roulette" className="relative overflow-hidden">
@@ -229,81 +175,7 @@ const Index = () => {
         </ContainerScroll>
       </section>
 
-      {/* How It Works Section */}
-      <section className="py-20 px-3 sm:px-4 bg-muted/30 overflow-x-hidden">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <div className="mb-4">
-              <FlipText 
-                word="Como Funciona" 
-                duration={0.4}
-                delayMultiple={0.06}
-                className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground"
-                spacing="space-x-0.5 sm:space-x-1"
-              />
-            </div>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Três passos simples para girar e ganhar
-            </p>
-          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <HowItWorksStep
-              step={1}
-              title="Configure os Prêmios"
-              description="Personalize as opções da roleta com os prêmios ou escolhas que você deseja"
-              delay={0.1}
-            />
-            <HowItWorksStep
-              step={2}
-              title="Gire a Roleta"
-              description="Clique no botão 'Spin' e observe a roleta girar com animações suaves"
-              delay={0.2}
-            />
-            <HowItWorksStep
-              step={3}
-              title="Descubra o Vencedor"
-              description="Veja o resultado com uma animação especial revelando o prêmio sorteado"
-              delay={0.3}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-20 px-3 sm:px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent" />
-        <div className="max-w-6xl mx-auto relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <div className="mb-4">
-              <FlipText 
-                word="Números Que Impressionam" 
-                duration={0.4}
-                delayMultiple={0.05}
-                className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground"
-                spacing="space-x-0.5 sm:space-x-1"
-              />
-            </div>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-            <StatsCounter value="10.000+" label="Giros Realizados" delay={0.1} />
-            <StatsCounter value="100%" label="Aleatório" delay={0.2} />
-            <StatsCounter value="0ms" label="Delay" delay={0.3} />
-            <StatsCounter value="∞" label="Possibilidades" delay={0.4} />
-          </div>
-        </div>
-      </section>
 
       {/* Final CTA */}
       <section className="py-20 px-3 sm:px-4 bg-muted/30">

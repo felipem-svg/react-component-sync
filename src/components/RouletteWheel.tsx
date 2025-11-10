@@ -124,7 +124,7 @@ export function RouletteWheel({
       </div>
 
       {/* Controls */}
-      <div className="flex gap-3 sm:gap-4">
+      <div className="flex flex-wrap gap-3 sm:gap-4 justify-center">
         <Button
           onClick={spinWheel}
           disabled={isSpinning}
@@ -156,20 +156,21 @@ export function RouletteWheel({
             className="text-center"
           >
             <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
-              <span className="text-3xl sm:text-4xl lg:text-5xl">🎉</span>
+              <span className="text-2xl sm:text-3xl lg:text-4xl">🎉</span>
               <FlipText 
                 word="Parabéns" 
                 duration={0.3}
                 delayMultiple={0.1}
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground"
+                className="text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground"
+                spacing="space-x-1 sm:space-x-2"
               />
-              <span className="text-3xl sm:text-4xl lg:text-5xl">🎉</span>
+              <span className="text-2xl sm:text-3xl lg:text-4xl">🎉</span>
             </div>
             <motion.div
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 0.5, repeat: Infinity }}
               className={cn(
-                "text-lg sm:text-xl lg:text-2xl font-bold px-6 py-4 sm:px-8 sm:py-5 rounded-xl text-white shadow-2xl border-2 border-white/20",
+                "text-base sm:text-lg md:text-xl lg:text-2xl font-bold px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-5 rounded-xl text-white shadow-2xl border-2 border-white/20 max-w-[90vw] break-words text-center",
                 winner.color
               )}
             >

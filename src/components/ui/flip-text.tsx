@@ -8,6 +8,7 @@ interface FlipTextProps {
   delayMultiple?: number;
   framerProps?: Variants;
   className?: string;
+  spacing?: string;
 }
 
 function FlipText({
@@ -19,9 +20,10 @@ function FlipText({
     visible: { rotateX: 0, opacity: 1 },
   },
   className,
+  spacing,
 }: FlipTextProps) {
   return (
-    <div className="flex justify-center space-x-2">
+    <div className={cn("flex justify-center", spacing || "space-x-1 sm:space-x-2")}>
       <AnimatePresence mode="wait">
         {word.split("").map((char, i) => (
           <motion.span

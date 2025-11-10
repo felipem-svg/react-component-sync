@@ -82,12 +82,12 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-background">
+    <div className="min-h-screen w-full bg-background overflow-x-hidden">
       <AuthDialog open={showAuthDialog} onOpenChange={setShowAuthDialog} />
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-16">
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-3 sm:px-4 overflow-hidden pt-16">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
         
@@ -107,7 +107,8 @@ const Index = () => {
               word="Roleta da Sorte" 
               duration={0.5}
               delayMultiple={0.1}
-              className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary"
+              className="text-3xl sm:text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary"
+              spacing="space-x-0.5 sm:space-x-1 md:space-x-2"
             />
           </motion.div>
           
@@ -153,7 +154,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-muted/30">
+      <section className="py-20 px-3 sm:px-4 bg-muted/30 overflow-x-hidden">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -166,7 +167,8 @@ const Index = () => {
                 word="Por Que Escolher Nossa Roleta?" 
                 duration={0.4}
                 delayMultiple={0.05}
-                className="text-4xl md:text-5xl font-bold text-foreground"
+                className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground"
+                spacing="space-x-0.5 sm:space-x-1"
               />
             </div>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -213,7 +215,8 @@ const Index = () => {
                   word="Experimente Agora" 
                   duration={0.5}
                   delayMultiple={0.08}
-                  className="text-3xl sm:text-5xl md:text-6xl font-bold text-foreground"
+                  className="text-2xl sm:text-4xl md:text-6xl font-bold text-foreground"
+                  spacing="space-x-0.5 sm:space-x-1 md:space-x-2"
                 />
               </div>
               <p className="text-muted-foreground text-lg">
@@ -227,7 +230,7 @@ const Index = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 px-4 bg-muted/30">
+      <section className="py-20 px-3 sm:px-4 bg-muted/30 overflow-x-hidden">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -240,7 +243,8 @@ const Index = () => {
                 word="Como Funciona" 
                 duration={0.4}
                 delayMultiple={0.06}
-                className="text-4xl md:text-5xl font-bold text-foreground"
+                className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground"
+                spacing="space-x-0.5 sm:space-x-1"
               />
             </div>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -272,7 +276,7 @@ const Index = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 px-4 relative overflow-hidden">
+      <section className="py-20 px-3 sm:px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent" />
         <div className="max-w-6xl mx-auto relative z-10">
           <motion.div
@@ -286,7 +290,8 @@ const Index = () => {
                 word="Números Que Impressionam" 
                 duration={0.4}
                 delayMultiple={0.05}
-                className="text-4xl md:text-5xl font-bold text-foreground"
+                className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground"
+                spacing="space-x-0.5 sm:space-x-1"
               />
             </div>
           </motion.div>
@@ -301,7 +306,7 @@ const Index = () => {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-4 bg-muted/30">
+      <section className="py-20 px-3 sm:px-4 bg-muted/30">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -119,12 +119,13 @@ export default function Admin() {
         >
           <div className="text-center">
             <div className="mb-2">
-              <FlipText 
-                word="Painel Administrativo" 
-                duration={0.5}
-                delayMultiple={0.06}
-                className="text-4xl font-bold text-foreground"
-              />
+          <FlipText 
+            word="Painel Administrativo" 
+            duration={0.5}
+            delayMultiple={0.06}
+            className="text-2xl sm:text-4xl font-bold text-foreground"
+            spacing="space-x-0.5 sm:space-x-1"
+          />
             </div>
             <p className="text-muted-foreground">
               Gerencie os prêmios da roleta

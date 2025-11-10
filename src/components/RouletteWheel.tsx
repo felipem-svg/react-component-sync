@@ -292,7 +292,7 @@ export function RouletteWheel({
       </motion.div>
 
       {/* Controls */}
-      <div className="flex flex-col items-center gap-3">
+      <div className="flex flex-col items-center gap-3 sm:gap-4">
         <div className="flex flex-wrap gap-3 sm:gap-4 justify-center">
           <Button
             onClick={spinWheel}
@@ -305,7 +305,7 @@ export function RouletteWheel({
           </Button>
           <Button
             onClick={reset}
-            disabled={isSpinning}
+            disabled={isSpinning || disabled}
             variant="outline"
             size="default"
             className="gap-2 sm:text-base lg:text-lg sm:px-6 sm:py-6"
@@ -314,14 +314,14 @@ export function RouletteWheel({
             Reset
           </Button>
         </div>
-
+        
         {disabled && disabledReason && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center text-sm max-w-md p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20"
+            className="text-center text-sm bg-destructive/10 text-destructive px-4 py-3 rounded-lg border border-destructive/20 max-w-md"
           >
-            🚫 {disabledReason}
+            {disabledReason}
           </motion.div>
         )}
       </div>

@@ -13,7 +13,7 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, BarChart3, Settings, History, Shield } from "lucide-react";
+import { Loader2, BarChart3, Settings, History, Target } from "lucide-react";
 
 interface Prize {
   id: number;
@@ -224,11 +224,11 @@ const Admin = () => {
             </TabsTrigger>
             <TabsTrigger value="prizes" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
-              Gerenciar Prêmios
+              Prêmios
             </TabsTrigger>
             <TabsTrigger value="spin-limits" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Limites de Giro
+              <Target className="h-4 w-4" />
+              Limites
             </TabsTrigger>
             <TabsTrigger value="history" className="flex items-center gap-2">
               <History className="h-4 w-4" />

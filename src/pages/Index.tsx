@@ -1,26 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { RouletteWheel } from "@/components/RouletteWheel";
 import { FeatureCard } from "@/components/FeatureCard";
 import { HowItWorksStep } from "@/components/HowItWorksStep";
 import { StatsCounter } from "@/components/StatsCounter";
-import { PrizeCustomizer, Prize } from "@/components/PrizeCustomizer";
+import { Navbar } from "@/components/Navbar";
+import { Prize } from "@/components/PrizeCustomizer";
 import { Button } from "@/components/ui/button";
 import { Target, Zap, Palette, PartyPopper, ArrowDown } from "lucide-react";
-
-const defaultPrizes: Prize[] = [
-  { id: 1, label: "iPhone 15 Pro", color: "bg-gradient-to-br from-purple-500 to-purple-700" },
-  { id: 2, label: "MacBook Air", color: "bg-gradient-to-br from-blue-500 to-blue-700" },
-  { id: 3, label: "AirPods Pro", color: "bg-gradient-to-br from-green-500 to-green-700" },
-  { id: 4, label: "iPad Mini", color: "bg-gradient-to-br from-yellow-500 to-yellow-700" },
-  { id: 5, label: "Apple Watch", color: "bg-gradient-to-br from-red-500 to-red-700" },
-  { id: 6, label: "Gift Card $100", color: "bg-gradient-to-br from-pink-500 to-pink-700" },
-  { id: 7, label: "Premium Sub", color: "bg-gradient-to-br from-orange-500 to-orange-700" },
-  { id: 8, label: "Mystery Box", color: "bg-gradient-to-br from-teal-500 to-teal-700" },
-];
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
-  const [prizes, setPrizes] = useState<Prize[]>(defaultPrizes);
+  const [prizes, setPrizes] = useState<Prize[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchPrizes();
+  }, []);
+
+  const fetchPrizes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("roulette_prizes")
+        .select("*")
+        .order("position", { ascending: true });
+
+      if (error) throw error;
+
+      const formattedPrizes = data.map((prize) => ({
+        id: prize.id,
+        label: prize.label,
+        color: prize.color,
+      }));
+
+      setPrizes(formattedPrizes);
+    } catch (error) {
+      console.error("Error fetching prizes:", error);
+      toast({
+        title: "Erro ao carregar prêmios",
+        description: "Não foi possível carregar os prêmios.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const scrollToRoulette = () => {
     document.getElementById("roulette")?.scrollIntoView({ behavior: "smooth" });
@@ -30,14 +56,23 @@ const Index = () => {
     console.log("Winner:", winner);
   };
 
-  const handlePrizesChange = (newPrizes: Prize[]) => {
-    setPrizes(newPrizes);
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full bg-background">
+      <Navbar />
+      
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-16">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
         
@@ -157,9 +192,8 @@ const Index = () => {
               Experimente Agora
             </h2>
             <p className="text-muted-foreground text-lg mb-6">
-              Clique em "Spin" e descubra qual prêmio você ganhou!
+              Gire a roleta e veja a magia acontecer!
             </p>
-            <PrizeCustomizer prizes={prizes} onPrizesChange={handlePrizesChange} />
           </motion.div>
 
           <motion.div

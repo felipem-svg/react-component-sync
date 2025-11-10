@@ -1,29 +1,37 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { RouletteWheel } from "@/components/RouletteWheel";
 import { FeatureCard } from "@/components/FeatureCard";
 import { HowItWorksStep } from "@/components/HowItWorksStep";
 import { StatsCounter } from "@/components/StatsCounter";
+import { PrizeCustomizer, Prize } from "@/components/PrizeCustomizer";
 import { Button } from "@/components/ui/button";
 import { Target, Zap, Palette, PartyPopper, ArrowDown } from "lucide-react";
 
+const defaultPrizes: Prize[] = [
+  { id: 1, label: "iPhone 15 Pro", color: "bg-gradient-to-br from-purple-500 to-purple-700" },
+  { id: 2, label: "MacBook Air", color: "bg-gradient-to-br from-blue-500 to-blue-700" },
+  { id: 3, label: "AirPods Pro", color: "bg-gradient-to-br from-green-500 to-green-700" },
+  { id: 4, label: "iPad Mini", color: "bg-gradient-to-br from-yellow-500 to-yellow-700" },
+  { id: 5, label: "Apple Watch", color: "bg-gradient-to-br from-red-500 to-red-700" },
+  { id: 6, label: "Gift Card $100", color: "bg-gradient-to-br from-pink-500 to-pink-700" },
+  { id: 7, label: "Premium Sub", color: "bg-gradient-to-br from-orange-500 to-orange-700" },
+  { id: 8, label: "Mystery Box", color: "bg-gradient-to-br from-teal-500 to-teal-700" },
+];
+
 const Index = () => {
-  const customPrizes = [
-    { id: 1, label: "iPhone 15 Pro", color: "bg-gradient-to-br from-purple-500 to-purple-700" },
-    { id: 2, label: "MacBook Air", color: "bg-gradient-to-br from-blue-500 to-blue-700" },
-    { id: 3, label: "AirPods Pro", color: "bg-gradient-to-br from-green-500 to-green-700" },
-    { id: 4, label: "iPad Mini", color: "bg-gradient-to-br from-yellow-500 to-yellow-700" },
-    { id: 5, label: "Apple Watch", color: "bg-gradient-to-br from-red-500 to-red-700" },
-    { id: 6, label: "Gift Card $100", color: "bg-gradient-to-br from-pink-500 to-pink-700" },
-    { id: 7, label: "Premium Sub", color: "bg-gradient-to-br from-orange-500 to-orange-700" },
-    { id: 8, label: "Mystery Box", color: "bg-gradient-to-br from-teal-500 to-teal-700" },
-  ];
+  const [prizes, setPrizes] = useState<Prize[]>(defaultPrizes);
 
   const scrollToRoulette = () => {
     document.getElementById("roulette")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleWinner = (winner: { id: number; label: string; color: string }) => {
+  const handleWinner = (winner: Prize) => {
     console.log("Winner:", winner);
+  };
+
+  const handlePrizesChange = (newPrizes: Prize[]) => {
+    setPrizes(newPrizes);
   };
 
   return (
@@ -143,14 +151,15 @@ const Index = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-8"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
               Experimente Agora
             </h2>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-lg mb-6">
               Clique em "Spin" e descubra qual prêmio você ganhou!
             </p>
+            <PrizeCustomizer prizes={prizes} onPrizesChange={handlePrizesChange} />
           </motion.div>
 
           <motion.div
@@ -159,7 +168,7 @@ const Index = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <RouletteWheel items={customPrizes} onSpinComplete={handleWinner} />
+            <RouletteWheel items={prizes} onSpinComplete={handleWinner} />
           </motion.div>
         </div>
       </section>

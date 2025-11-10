@@ -1,0 +1,362 @@
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Settings, Plus, Trash2, Edit2, Save, X } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
+
+export interface Prize {
+  id: number;
+  label: string;
+  color: string;
+}
+
+interface PrizeCustomizerProps {
+  prizes: Prize[];
+  onPrizesChange: (prizes: Prize[]) => void;
+}
+
+const prizeSchema = z.object({
+  label: z
+    .string()
+    .trim()
+    .min(1, "Nome do prêmio é obrigatório")
+    .max(50, "Nome deve ter no máximo 50 caracteres"),
+  color: z.string().regex(/^bg-gradient-to-br from-\w+-\d+ to-\w+-\d+$/, "Formato de cor inválido"),
+});
+
+const colorOptions = [
+  { label: "Roxo", value: "bg-gradient-to-br from-purple-500 to-purple-700" },
+  { label: "Azul", value: "bg-gradient-to-br from-blue-500 to-blue-700" },
+  { label: "Verde", value: "bg-gradient-to-br from-green-500 to-green-700" },
+  { label: "Amarelo", value: "bg-gradient-to-br from-yellow-500 to-yellow-700" },
+  { label: "Vermelho", value: "bg-gradient-to-br from-red-500 to-red-700" },
+  { label: "Rosa", value: "bg-gradient-to-br from-pink-500 to-pink-700" },
+  { label: "Laranja", value: "bg-gradient-to-br from-orange-500 to-orange-700" },
+  { label: "Turquesa", value: "bg-gradient-to-br from-teal-500 to-teal-700" },
+  { label: "Índigo", value: "bg-gradient-to-br from-indigo-500 to-indigo-700" },
+  { label: "Ciano", value: "bg-gradient-to-br from-cyan-500 to-cyan-700" },
+];
+
+export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps) => {
+  const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [newPrize, setNewPrize] = useState({ label: "", color: colorOptions[0].value });
+  const [errors, setErrors] = useState<{ label?: string; color?: string }>({});
+  const { toast } = useToast();
+
+  const validatePrize = (label: string, color: string) => {
+    try {
+      prizeSchema.parse({ label, color });
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldErrors: { label?: string; color?: string } = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            fieldErrors[err.path[0] as "label" | "color"] = err.message;
+          }
+        });
+        setErrors(fieldErrors);
+      }
+      return false;
+    }
+  };
+
+  const addPrize = () => {
+    if (!validatePrize(newPrize.label, newPrize.color)) {
+      return;
+    }
+
+    if (prizes.length >= 12) {
+      toast({
+        title: "Limite atingido",
+        description: "Você pode adicionar no máximo 12 prêmios",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newId = Math.max(0, ...prizes.map((p) => p.id)) + 1;
+    onPrizesChange([...prizes, { ...newPrize, id: newId }]);
+    setNewPrize({ label: "", color: colorOptions[0].value });
+    setErrors({});
+    
+    toast({
+      title: "Prêmio adicionado!",
+      description: `${newPrize.label} foi adicionado à roleta`,
+    });
+  };
+
+  const updatePrize = (id: number, label: string, color: string) => {
+    if (!validatePrize(label, color)) {
+      return;
+    }
+
+    onPrizesChange(prizes.map((p) => (p.id === id ? { ...p, label, color } : p)));
+    setEditingId(null);
+    setErrors({});
+    
+    toast({
+      title: "Prêmio atualizado!",
+      description: "As alterações foram salvas",
+    });
+  };
+
+  const removePrize = (id: number) => {
+    if (prizes.length <= 2) {
+      toast({
+        title: "Não é possível remover",
+        description: "A roleta precisa ter pelo menos 2 prêmios",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const prize = prizes.find((p) => p.id === id);
+    onPrizesChange(prizes.filter((p) => p.id !== id));
+    
+    toast({
+      title: "Prêmio removido",
+      description: `${prize?.label} foi removido da roleta`,
+    });
+  };
+
+  const resetToDefaults = () => {
+    const defaultPrizes: Prize[] = [
+      { id: 1, label: "iPhone 15 Pro", color: "bg-gradient-to-br from-purple-500 to-purple-700" },
+      { id: 2, label: "MacBook Air", color: "bg-gradient-to-br from-blue-500 to-blue-700" },
+      { id: 3, label: "AirPods Pro", color: "bg-gradient-to-br from-green-500 to-green-700" },
+      { id: 4, label: "iPad Mini", color: "bg-gradient-to-br from-yellow-500 to-yellow-700" },
+      { id: 5, label: "Apple Watch", color: "bg-gradient-to-br from-red-500 to-red-700" },
+      { id: 6, label: "Gift Card $100", color: "bg-gradient-to-br from-pink-500 to-pink-700" },
+      { id: 7, label: "Premium Sub", color: "bg-gradient-to-br from-orange-500 to-orange-700" },
+      { id: 8, label: "Mystery Box", color: "bg-gradient-to-br from-teal-500 to-teal-700" },
+    ];
+    onPrizesChange(defaultPrizes);
+    
+    toast({
+      title: "Prêmios restaurados",
+      description: "A roleta foi restaurada para os prêmios padrão",
+    });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="lg" className="gap-2">
+          <Settings className="w-5 h-5" />
+          Customizar Prêmios
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-background">
+        <DialogHeader>
+          <DialogTitle className="text-2xl">Customizar Prêmios da Roleta</DialogTitle>
+          <DialogDescription>
+            Adicione, edite ou remova prêmios da roleta. Mínimo 2 prêmios, máximo 12.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-6 py-4">
+          {/* Add New Prize */}
+          <div className="space-y-4 p-4 border border-border rounded-lg bg-muted/30">
+            <h3 className="font-semibold text-lg flex items-center gap-2">
+              <Plus className="w-5 h-5" />
+              Adicionar Novo Prêmio
+            </h3>
+            
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="new-prize-label">Nome do Prêmio</Label>
+                <Input
+                  id="new-prize-label"
+                  value={newPrize.label}
+                  onChange={(e) => {
+                    setNewPrize({ ...newPrize, label: e.target.value });
+                    setErrors({});
+                  }}
+                  placeholder="Ex: iPhone 15 Pro"
+                  maxLength={50}
+                />
+                {errors.label && (
+                  <p className="text-sm text-destructive">{errors.label}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="new-prize-color">Cor do Segmento</Label>
+                <div className="grid grid-cols-5 gap-2">
+                  {colorOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setNewPrize({ ...newPrize, color: option.value })}
+                      className={`h-12 rounded-md transition-all ${option.value} ${
+                        newPrize.color === option.value
+                          ? "ring-4 ring-primary scale-105"
+                          : "hover:scale-105"
+                      }`}
+                      title={option.label}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <Button onClick={addPrize} className="w-full">
+                <Plus className="w-4 h-4 mr-2" />
+                Adicionar Prêmio
+              </Button>
+            </div>
+          </div>
+
+          {/* Prizes List */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-lg">
+                Prêmios Atuais ({prizes.length})
+              </h3>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={resetToDefaults}
+              >
+                Restaurar Padrão
+              </Button>
+            </div>
+
+            <AnimatePresence mode="popLayout">
+              {prizes.map((prize) => (
+                <motion.div
+                  key={prize.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className="p-3 border border-border rounded-lg bg-card hover:border-primary/50 transition-colors"
+                >
+                  {editingId === prize.id ? (
+                    <EditPrizeForm
+                      prize={prize}
+                      colorOptions={colorOptions}
+                      onSave={(label, color) => updatePrize(prize.id, label, color)}
+                      onCancel={() => {
+                        setEditingId(null);
+                        setErrors({});
+                      }}
+                      errors={errors}
+                      onErrorsClear={() => setErrors({})}
+                    />
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-md ${prize.color} shrink-0`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{prize.label}</p>
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setEditingId(prize.id)}
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removePrize(prize.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface EditPrizeFormProps {
+  prize: Prize;
+  colorOptions: { label: string; value: string }[];
+  onSave: (label: string, color: string) => void;
+  onCancel: () => void;
+  errors: { label?: string; color?: string };
+  onErrorsClear: () => void;
+}
+
+const EditPrizeForm = ({
+  prize,
+  colorOptions,
+  onSave,
+  onCancel,
+  errors,
+  onErrorsClear,
+}: EditPrizeFormProps) => {
+  const [label, setLabel] = useState(prize.label);
+  const [color, setColor] = useState(prize.color);
+
+  return (
+    <div className="space-y-3">
+      <div className="space-y-2">
+        <Label htmlFor={`edit-prize-${prize.id}`}>Nome do Prêmio</Label>
+        <Input
+          id={`edit-prize-${prize.id}`}
+          value={label}
+          onChange={(e) => {
+            setLabel(e.target.value);
+            onErrorsClear();
+          }}
+          maxLength={50}
+        />
+        {errors.label && (
+          <p className="text-sm text-destructive">{errors.label}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label>Cor do Segmento</Label>
+        <div className="grid grid-cols-5 gap-2">
+          {colorOptions.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setColor(option.value)}
+              className={`h-10 rounded-md transition-all ${option.value} ${
+                color === option.value
+                  ? "ring-4 ring-primary scale-105"
+                  : "hover:scale-105"
+              }`}
+              title={option.label}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="flex gap-2">
+        <Button onClick={() => onSave(label, color)} className="flex-1">
+          <Save className="w-4 h-4 mr-2" />
+          Salvar
+        </Button>
+        <Button variant="outline" onClick={onCancel} className="flex-1">
+          <X className="w-4 h-4 mr-2" />
+          Cancelar
+        </Button>
+      </div>
+    </div>
+  );
+};

@@ -18,6 +18,8 @@ interface RouletteWheelProps {
   items?: RouletteItem[];
   onSpinComplete?: (winner: RouletteItem) => void;
   className?: string;
+  disabled?: boolean;
+  disabledReason?: string | null;
 }
 
 const getColorLight = (color: string) => {
@@ -87,6 +89,8 @@ export function RouletteWheel({
   ],
   onSpinComplete,
   className,
+  disabled = false,
+  disabledReason = null,
 }: RouletteWheelProps) {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -288,26 +292,38 @@ export function RouletteWheel({
       </motion.div>
 
       {/* Controls */}
-      <div className="flex flex-wrap gap-3 sm:gap-4 justify-center">
-        <Button
-          onClick={spinWheel}
-          disabled={isSpinning}
-          size="default"
-          className="gap-2 sm:text-base lg:text-lg sm:px-6 sm:py-6"
-        >
-          <Play className="w-4 h-4 sm:w-5 sm:h-5" />
-          {isSpinning ? "Girando..." : "Girar"}
-        </Button>
-        <Button
-          onClick={reset}
-          disabled={isSpinning}
-          variant="outline"
-          size="default"
-          className="gap-2 sm:text-base lg:text-lg sm:px-6 sm:py-6"
-        >
-          <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
-          Reset
-        </Button>
+      <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-wrap gap-3 sm:gap-4 justify-center">
+          <Button
+            onClick={spinWheel}
+            disabled={isSpinning || disabled}
+            size="default"
+            className="gap-2 sm:text-base lg:text-lg sm:px-6 sm:py-6"
+          >
+            <Play className="w-4 h-4 sm:w-5 sm:h-5" />
+            {disabled ? "Giro Bloqueado" : isSpinning ? "Girando..." : "Girar"}
+          </Button>
+          <Button
+            onClick={reset}
+            disabled={isSpinning}
+            variant="outline"
+            size="default"
+            className="gap-2 sm:text-base lg:text-lg sm:px-6 sm:py-6"
+          >
+            <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
+            Reset
+          </Button>
+        </div>
+
+        {disabled && disabledReason && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center text-sm max-w-md p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20"
+          >
+            🚫 {disabledReason}
+          </motion.div>
+        )}
       </div>
 
       {/* Winner Display */}

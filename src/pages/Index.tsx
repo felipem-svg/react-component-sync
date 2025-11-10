@@ -16,6 +16,9 @@ const Index = () => {
   const [prizes, setPrizes] = useState<Prize[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [canSpin, setCanSpin] = useState(true);
+  const [spinBlockReason, setSpinBlockReason] = useState<string | null>(null);
+  const [checkingSpinPermission, setCheckingSpinPermission] = useState(false);
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
 
@@ -30,6 +33,35 @@ const Index = () => {
       setShowAuthDialog(false);
     }
   }, [user, authLoading]);
+
+  useEffect(() => {
+    if (user) {
+      checkCanSpin();
+    }
+  }, [user]);
+
+  const checkCanSpin = async () => {
+    if (!user) return;
+
+    try {
+      setCheckingSpinPermission(true);
+      const { data, error } = await supabase.rpc('can_user_spin', {
+        _user_id: user.id,
+      });
+
+      if (error) throw error;
+
+      const result = data as { can_spin: boolean; reason: string | null; next_available: string | null };
+      setCanSpin(result.can_spin);
+      setSpinBlockReason(result.reason);
+    } catch (error) {
+      console.error('Error checking spin permission:', error);
+      setCanSpin(true);
+      setSpinBlockReason(null);
+    } finally {
+      setCheckingSpinPermission(false);
+    }
+  };
 
   const fetchPrizes = async () => {
     try {
@@ -67,33 +99,50 @@ const Index = () => {
   const handleWinner = async (winner: Prize) => {
     console.log("Winner:", winner);
 
-    // Save won prize to database if user is logged in
-    if (user) {
-      try {
-        const { error } = await supabase
-          .from("user_prizes")
-          .insert({
-            user_id: user.id,
-            prize_id: winner.id,
-            prize_label: winner.label,
-            prize_color: winner.color,
-            user_email: user.email || "Sem email",
-          });
+    if (!user) {
+      toast({
+        title: "Login necessário",
+        description: "Faça login para salvar seu prêmio.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-        if (error) throw error;
+    if (!canSpin) {
+      toast({
+        title: "Giro não permitido",
+        description: spinBlockReason || "Você atingiu o limite de giros.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-        toast({
-          title: "Prêmio salvo!",
-          description: `${winner.label} foi adicionado ao seu histórico.`,
+    try {
+      const { error } = await supabase
+        .from("user_prizes")
+        .insert({
+          user_id: user.id,
+          prize_id: winner.id,
+          prize_label: winner.label,
+          prize_color: winner.color,
+          user_email: user.email || "Sem email",
         });
-      } catch (error) {
-        console.error("Error saving prize:", error);
-        toast({
-          title: "Erro ao salvar prêmio",
-          description: "Não foi possível salvar o prêmio no histórico.",
-          variant: "destructive",
-        });
-      }
+
+      if (error) throw error;
+
+      toast({
+        title: "Prêmio salvo!",
+        description: `${winner.label} foi adicionado ao seu histórico.`,
+      });
+
+      await checkCanSpin();
+    } catch (error) {
+      console.error("Error saving prize:", error);
+      toast({
+        title: "Erro ao salvar prêmio",
+        description: "Não foi possível salvar o prêmio no histórico.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -225,7 +274,12 @@ const Index = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, type: "spring" }}
           >
-            <RouletteWheel items={prizes} onSpinComplete={handleWinner} />
+            <RouletteWheel 
+              items={prizes} 
+              onSpinComplete={handleWinner}
+              disabled={!canSpin || checkingSpinPermission}
+              disabledReason={spinBlockReason}
+            />
           </motion.div>
         </div>
       </section>

@@ -7,12 +7,13 @@ import { AdminStats } from "@/components/admin/AdminStats";
 import { PrizesFilters } from "@/components/admin/PrizesFilters";
 import { PrizesTable } from "@/components/admin/PrizesTable";
 import { PrizesChart } from "@/components/admin/PrizesChart";
+import { SpinLimitSettings } from "@/components/admin/SpinLimitSettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, BarChart3, Settings, History } from "lucide-react";
+import { Loader2, BarChart3, Settings, History, Shield } from "lucide-react";
 
 interface Prize {
   id: number;
@@ -216,7 +217,7 @@ const Admin = () => {
         </h1>
 
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               Dashboard
@@ -224,6 +225,10 @@ const Admin = () => {
             <TabsTrigger value="prizes" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
               Gerenciar Prêmios
+            </TabsTrigger>
+            <TabsTrigger value="spin-limits" className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              Limites de Giro
             </TabsTrigger>
             <TabsTrigger value="history" className="flex items-center gap-2">
               <History className="h-4 w-4" />
@@ -258,6 +263,10 @@ const Admin = () => {
                 <RouletteWheel items={prizes} onSpinComplete={() => {}} />
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="spin-limits">
+            <SpinLimitSettings />
           </TabsContent>
 
           <TabsContent value="history">

@@ -44,6 +44,30 @@ export type Database = {
         }
         Relationships: []
       }
+      roulette_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          spin_limit_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          spin_limit_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          spin_limit_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       user_prizes: {
         Row: {
           created_at: string
@@ -111,6 +135,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_user_spin: { Args: { _user_id: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -13,20 +13,25 @@ export const ContainerScroll = ({
     target: containerRef,
   });
   const [isMobile, setIsMobile] = React.useState(false);
+  const [isTablet, setIsTablet] = React.useState(false);
 
   React.useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+    const checkDevice = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < 768);
+      setIsTablet(width >= 768 && width < 1024);
     };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+    checkDevice();
+    window.addEventListener("resize", checkDevice);
     return () => {
-      window.removeEventListener("resize", checkMobile);
+      window.removeEventListener("resize", checkDevice);
     };
   }, []);
 
   const scaleDimensions = () => {
-    return isMobile ? [0.7, 0.9] : [1.05, 1];
+    if (isMobile) return [0.8, 1];
+    if (isTablet) return [0.9, 1];
+    return [1.05, 1];
   };
 
   const rotate = useTransform(scrollYProgress, [0, 1], [20, 0]);
@@ -84,7 +89,7 @@ export const Card = ({
         boxShadow:
           "0 0 #0000004d, 0 9px 20px #0000004a, 0 37px 37px #00000042, 0 84px 50px #00000026, 0 149px 60px #0000000a, 0 233px 65px #00000003",
       }}
-      className="max-w-5xl -mt-12 mx-auto h-[30rem] md:h-[40rem] w-full border-4 border-[#6C6C6C] p-2 md:p-6 bg-[#222222] rounded-[30px] shadow-2xl"
+      className="max-w-5xl -mt-12 mx-auto h-[35rem] md:h-[50rem] lg:h-[40rem] w-full border-4 border-[#6C6C6C] p-4 md:p-6 lg:p-8 bg-[#222222] rounded-[30px] shadow-2xl"
     >
       <div className="h-full w-full overflow-hidden rounded-2xl bg-background md:rounded-2xl md:p-4">
         {children}

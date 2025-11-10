@@ -184,7 +184,7 @@ const Index = () => {
         <ContainerScroll
           titleComponent={
             <>
-              <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-foreground mb-4">
                 Experimente Agora
               </h1>
               <p className="text-muted-foreground text-lg">

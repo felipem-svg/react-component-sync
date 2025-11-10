@@ -79,7 +79,7 @@ export function RouletteWheel({
         </div>
 
         {/* Wheel Container */}
-        <div className="relative w-[400px] h-[400px] rounded-full shadow-2xl overflow-hidden border-8 border-primary">
+        <div className="relative w-[280px] h-[280px] sm:w-[350px] sm:h-[350px] lg:w-[400px] lg:h-[400px] rounded-full shadow-2xl overflow-hidden border-4 sm:border-6 lg:border-8 border-primary">
           <motion.div
             className="w-full h-full relative"
             animate={{ rotate: rotation }}
@@ -105,7 +105,7 @@ export function RouletteWheel({
                   }}
                 >
                   <div
-                    className="absolute top-[20%] left-1/2 -translate-x-1/2 text-white font-bold text-sm whitespace-nowrap"
+                    className="absolute top-[20%] left-1/2 -translate-x-1/2 text-white font-bold text-xs sm:text-sm md:text-base whitespace-nowrap"
                     style={{
                       transform: `translateX(-50%) rotate(${segmentAngle / 2}deg)`,
                     }}
@@ -118,29 +118,29 @@ export function RouletteWheel({
           </motion.div>
 
           {/* Center Circle */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-white border-4 border-primary shadow-lg z-10" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-white border-2 sm:border-3 lg:border-4 border-primary shadow-lg z-10" />
         </div>
       </div>
 
       {/* Controls */}
-      <div className="flex gap-4">
+      <div className="flex gap-3 sm:gap-4">
         <Button
           onClick={spinWheel}
           disabled={isSpinning}
-          size="lg"
-          className="gap-2"
+          size="default"
+          className="gap-2 sm:text-base lg:text-lg sm:px-6 sm:py-6"
         >
-          <Play className="w-5 h-5" />
-          {isSpinning ? "Spinning..." : "Spin"}
+          <Play className="w-4 h-4 sm:w-5 sm:h-5" />
+          {isSpinning ? "Girando..." : "Girar"}
         </Button>
         <Button
           onClick={reset}
           disabled={isSpinning}
           variant="outline"
-          size="lg"
-          className="gap-2"
+          size="default"
+          className="gap-2 sm:text-base lg:text-lg sm:px-6 sm:py-6"
         >
-          <RotateCcw className="w-5 h-5" />
+          <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
           Reset
         </Button>
       </div>
@@ -154,17 +154,19 @@ export function RouletteWheel({
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             className="text-center"
           >
-            <div className="text-2xl font-bold text-foreground mb-2">
-              🎉 Winner! 🎉
+            <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4 animate-pulse">
+              🎉 Parabéns! 🎉
             </div>
-            <div
+            <motion.div
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 0.5, repeat: Infinity }}
               className={cn(
-                "text-xl font-semibold px-6 py-3 rounded-lg text-white shadow-lg",
+                "text-lg sm:text-xl lg:text-2xl font-bold px-6 py-4 sm:px-8 sm:py-5 rounded-xl text-white shadow-2xl border-2 border-white/20",
                 winner.color
               )}
             >
               {winner.label}
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

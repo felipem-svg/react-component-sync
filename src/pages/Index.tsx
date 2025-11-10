@@ -11,15 +11,27 @@ import { Target, Zap, Palette, PartyPopper, ArrowDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthDialog } from "@/components/AuthDialog";
 
 const Index = () => {
   const [prizes, setPrizes] = useState<Prize[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     fetchPrizes();
   }, []);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      setShowAuthDialog(true);
+    } else {
+      setShowAuthDialog(false);
+    }
+  }, [user, authLoading]);
 
   const fetchPrizes = async () => {
     try {
@@ -70,6 +82,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen w-full bg-background">
+      <AuthDialog open={showAuthDialog} onOpenChange={setShowAuthDialog} />
       <Navbar />
       
       {/* Hero Section */}

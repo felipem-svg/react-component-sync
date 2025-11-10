@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Sparkles } from "lucide-react";
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
 const loginSchema = z.object({
   email: z.string().trim().email({ message: "Email inválido" }),
@@ -25,9 +26,24 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      navigate("/");
-    }
+    const checkUserAndRedirect = async () => {
+      if (user) {
+        const { data } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .eq("role", "admin")
+          .maybeSingle();
+        
+        if (data) {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+      }
+    };
+
+    checkUserAndRedirect();
   }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,11 +86,26 @@ export default function Login() {
             variant: "destructive",
           });
         } else {
-          toast({
-            title: "Login realizado!",
-            description: "Bem-vindo de volta.",
-          });
-          navigate("/");
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const { data } = await supabase
+              .from("user_roles")
+              .select("role")
+              .eq("user_id", user.id)
+              .eq("role", "admin")
+              .maybeSingle();
+            
+            toast({
+              title: "Login realizado!",
+              description: data ? "Redirecionando para o painel admin..." : "Bem-vindo de volta.",
+            });
+
+            if (data) {
+              navigate("/admin");
+            } else {
+              navigate("/");
+            }
+          }
         }
       }
     } finally {

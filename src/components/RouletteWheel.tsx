@@ -61,17 +61,30 @@ export function RouletteWheel({
       }
     }
 
-    // Calcular rotação correta para parar no item selecionado
-    // O pointer está no topo (0°) - alinhamos o centro do segmento vencedor com ele
+    // 🔧 Calcular rotação relativa à posição atual da roleta
     const segmentCenterAngle = selectedIndex * segmentAngle + (segmentAngle / 2);
     const spins = 5 + Math.random() * 3; // 5-8 voltas completas
-    const finalAngle = 360 - segmentCenterAngle;
-    const totalRotation = rotation + (spins * 360) + finalAngle;
+    
+    // Normalizar rotação atual (0-360°)
+    const currentNormalizedAngle = rotation % 360;
+    
+    // Calcular o ângulo de destino (invertido porque queremos trazer o segmento ao ponteiro)
+    const targetAngle = 360 - segmentCenterAngle;
+    
+    // Calcular quanto precisamos girar a partir da posição atual
+    let rotationNeeded = targetAngle - currentNormalizedAngle;
+    
+    // Garantir que sempre giramos para frente (no sentido horário)
+    if (rotationNeeded < 0) rotationNeeded += 360;
+    
+    // Adicionar voltas completas e rotação necessária
+    const totalRotation = rotation + (spins * 360) + rotationNeeded;
 
     setRotation(totalRotation);
 
     setTimeout(() => {
       const winningItem = items[selectedIndex];
+      console.log("🎯 Winner:", winningItem, "Index:", selectedIndex, "Angle:", segmentCenterAngle);
       setWinner(winningItem);
       setShowWinner(true);
       setIsSpinning(false);

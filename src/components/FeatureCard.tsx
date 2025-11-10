@@ -17,10 +17,10 @@ export const FeatureCard = ({ icon: Icon, title, description, delay = 0 }: Featu
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
     >
-      <Card className="h-full hover:shadow-lg transition-shadow duration-300 border-border/50 bg-card/50 backdrop-blur">
+      <Card className="h-full hover:shadow-lg transition-shadow duration-300 border-[#722E73]/50 bg-[#311035]/50 backdrop-blur">
         <CardContent className="p-6 flex flex-col items-center text-center gap-4">
-          <div className="p-3 rounded-full bg-primary/10">
-            <Icon className="w-8 h-8 text-primary" />
+          <div className="p-3 rounded-full bg-[#9B4B8A]/20">
+            <Icon className="w-8 h-8 text-[#C2A083]" />
           </div>
           <h3 className="text-xl font-bold text-foreground">{title}</h3>
           <p className="text-muted-foreground">{description}</p>

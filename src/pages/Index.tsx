@@ -73,7 +73,7 @@ const Index = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#9B4B8A] mx-auto"></div>
           <p className="mt-4 text-muted-foreground">Carregando...</p>
         </div>
       </div>
@@ -87,8 +87,8 @@ const Index = () => {
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-3 sm:px-4 overflow-hidden pt-16">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#722E73]/20 via-background to-background" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#9B4B8A]/10 via-transparent to-transparent" />
         
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -106,7 +106,7 @@ const Index = () => {
               word="Roleta da Sorte" 
               duration={0.5}
               delayMultiple={0.1}
-              className="text-3xl sm:text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary"
+              className="text-3xl sm:text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#722E73] via-[#9B4B8A] to-[#C2A083]"
               spacing="space-x-0.5 sm:space-x-1 md:space-x-2"
             />
           </motion.div>
@@ -178,7 +178,7 @@ const Index = () => {
       </section>
 
       {/* Rewards Section */}
-      <section className="py-20 px-3 sm:px-4 bg-muted/30">
+      <section className="py-20 px-3 sm:px-4 bg-[#311035]/50">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -213,7 +213,7 @@ const Index = () => {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-3 sm:px-4 bg-muted/30">
+      <section className="py-20 px-3 sm:px-4 bg-[#311035]/50">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

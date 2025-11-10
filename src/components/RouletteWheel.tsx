@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Play, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FlipText } from "@/components/ui/flip-text";
+import Confetti from "react-confetti";
+import { useWindowSize } from "@/hooks/useWindowSize";
 
 interface RouletteItem {
   id: number;
@@ -90,6 +92,7 @@ export function RouletteWheel({
   const [isSpinning, setIsSpinning] = useState(false);
   const [winner, setWinner] = useState<RouletteItem | null>(null);
   const [showWinner, setShowWinner] = useState(false);
+  const { width, height } = useWindowSize();
 
   const segmentAngle = 360 / items.length;
 
@@ -140,6 +143,16 @@ export function RouletteWheel({
 
   return (
     <div className={cn("flex flex-col items-center gap-8 p-8", className)}>
+      {/* Confetti Effect */}
+      {showWinner && (
+        <Confetti
+          width={width}
+          height={height}
+          recycle={false}
+          numberOfPieces={500}
+          gravity={0.3}
+        />
+      )}
       <motion.div 
         className="relative"
         initial={{ scale: 0.8, opacity: 0 }}

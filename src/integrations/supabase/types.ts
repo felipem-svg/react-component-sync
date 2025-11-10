@@ -44,6 +44,44 @@ export type Database = {
         }
         Relationships: []
       }
+      user_prizes: {
+        Row: {
+          created_at: string
+          id: string
+          prize_color: string
+          prize_id: number | null
+          prize_label: string
+          user_id: string
+          won_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          prize_color: string
+          prize_id?: number | null
+          prize_label: string
+          user_id: string
+          won_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          prize_color?: string
+          prize_id?: number | null
+          prize_label?: string
+          user_id?: string
+          won_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_prizes_prize_id_fkey"
+            columns: ["prize_id"]
+            isOneToOne: false
+            referencedRelation: "roulette_prizes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string

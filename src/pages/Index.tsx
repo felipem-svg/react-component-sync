@@ -64,8 +64,36 @@ const Index = () => {
     document.getElementById("roulette")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleWinner = (winner: Prize) => {
+  const handleWinner = async (winner: Prize) => {
     console.log("Winner:", winner);
+
+    // Save won prize to database if user is logged in
+    if (user) {
+      try {
+        const { error } = await supabase
+          .from("user_prizes")
+          .insert({
+            user_id: user.id,
+            prize_id: winner.id,
+            prize_label: winner.label,
+            prize_color: winner.color,
+          });
+
+        if (error) throw error;
+
+        toast({
+          title: "Prêmio salvo!",
+          description: `${winner.label} foi adicionado ao seu histórico.`,
+        });
+      } catch (error) {
+        console.error("Error saving prize:", error);
+        toast({
+          title: "Erro ao salvar prêmio",
+          description: "Não foi possível salvar o prêmio no histórico.",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   if (loading) {

@@ -7,6 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { FlipText } from "@/components/ui/flip-text";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface Prize {
   id: number;
@@ -15,13 +18,24 @@ interface Prize {
   weight: number;
 }
 
+interface UserPrize {
+  id: string;
+  prize_label: string;
+  prize_color: string;
+  won_at: string;
+  user_email: string;
+}
+
 export default function Admin() {
   const [prizes, setPrizes] = useState<Prize[]>([]);
+  const [userPrizes, setUserPrizes] = useState<UserPrize[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingPrizes, setLoadingPrizes] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
     fetchPrizes();
+    fetchUserPrizes();
   }, []);
 
   const fetchPrizes = async () => {
@@ -94,6 +108,55 @@ export default function Admin() {
     }
   };
 
+  const fetchUserPrizes = async () => {
+    try {
+      setLoadingPrizes(true);
+      const { data, error } = await supabase
+        .from("user_prizes")
+        .select(`
+          id,
+          prize_label,
+          prize_color,
+          won_at,
+          user_id
+        `)
+        .order("won_at", { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      // Fetch user emails separately
+      const userIds = [...new Set(data.map(p => p.user_id))];
+      const { data: userData } = await supabase.auth.admin.listUsers();
+      
+      const userEmailMap = new Map<string, string>();
+      userData?.users.forEach(u => {
+        if (u.id && u.email) {
+          userEmailMap.set(u.id, u.email);
+        }
+      });
+
+      const formattedPrizes: UserPrize[] = data.map((prize) => ({
+        id: prize.id,
+        prize_label: prize.prize_label,
+        prize_color: prize.prize_color,
+        won_at: prize.won_at,
+        user_email: userEmailMap.get(prize.user_id) || "Usuário desconhecido",
+      }));
+
+      setUserPrizes(formattedPrizes);
+    } catch (error) {
+      console.error("Error fetching user prizes:", error);
+      toast({
+        title: "Erro ao carregar prêmios",
+        description: "Não foi possível carregar o histórico de prêmios.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingPrizes(false);
+    }
+  };
+
   const handleWinner = (winner: Prize) => {
     console.log("Winner:", winner);
   };
@@ -160,6 +223,65 @@ export default function Admin() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Won Prizes History */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle>Histórico de Prêmios Ganhos</CardTitle>
+                <CardDescription>
+                  Últimos 50 prêmios ganhos pelos usuários
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loadingPrizes ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                    <p className="mt-4 text-sm text-muted-foreground">Carregando prêmios...</p>
+                  </div>
+                ) : userPrizes.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">Nenhum prêmio foi ganho ainda.</p>
+                  </div>
+                ) : (
+                  <ScrollArea className="h-[400px] pr-4">
+                    <div className="space-y-4">
+                      {userPrizes.map((prize, index) => (
+                        <motion.div
+                          key={prize.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.05 }}
+                          className="flex items-center gap-4 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                        >
+                          <div
+                            className="w-12 h-12 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: prize.prize_color }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-foreground truncate">
+                              {prize.prize_label}
+                            </p>
+                            <p className="text-sm text-muted-foreground truncate">
+                              {prize.user_email}
+                            </p>
+                          </div>
+                          <div className="text-right text-sm text-muted-foreground flex-shrink-0">
+                            <p>{format(new Date(prize.won_at), "dd/MM/yyyy", { locale: ptBR })}</p>
+                            <p>{format(new Date(prize.won_at), "HH:mm", { locale: ptBR })}</p>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
         </motion.div>
       </main>
     </div>

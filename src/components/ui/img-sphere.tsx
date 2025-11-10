@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { X } from "lucide-react";
 
 /**
  * SphereImageGrid - Interactive 3D Image Sphere Component
@@ -42,8 +42,8 @@ export interface Position3D {
 }
 
 export interface SphericalPosition {
-  theta: number;  // Azimuth angle in degrees
-  phi: number;    // Polar angle in degrees
+  theta: number; // Azimuth angle in degrees
+  phi: number; // Polar angle in degrees
   radius: number; // Distance from center
 }
 
@@ -105,7 +105,7 @@ const SPHERE_MATH = {
   sphericalToCartesian: (radius: number, theta: number, phi: number): Position3D => ({
     x: radius * Math.sin(phi) * Math.cos(theta),
     y: radius * Math.cos(phi),
-    z: radius * Math.sin(phi) * Math.sin(theta)
+    z: radius * Math.sin(phi) * Math.sin(theta),
   }),
 
   calculateDistance: (pos: Position3D, center: Position3D = { x: 0, y: 0, z: 0 }): number => {
@@ -119,7 +119,7 @@ const SPHERE_MATH = {
     while (angle > 180) angle -= 360;
     while (angle < -180) angle += 360;
     return angle;
-  }
+  },
 };
 
 // ==========================================
@@ -138,9 +138,8 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
   perspective = 1000,
   autoRotate = false,
   autoRotateSpeed = 0.3,
-  className = ''
+  className = "",
 }) => {
-
   // ==========================================
   // STATE & REFS
   // ==========================================
@@ -174,7 +173,7 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
 
     // Use Fibonacci sphere distribution for even coverage
     const goldenRatio = (1 + Math.sqrt(5)) / 2;
-    const angleIncrement = 2 * Math.PI / goldenRatio;
+    const angleIncrement = (2 * Math.PI) / goldenRatio;
 
     for (let i = 0; i < imageCount; i++) {
       // Fibonacci sphere distribution
@@ -205,7 +204,7 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
       positions.push({
         theta: theta,
         phi: phi,
-        radius: actualSphereRadius
+        radius: actualSphereRadius,
       });
     }
 
@@ -240,8 +239,8 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
       const worldPos: Position3D = { x, y, z };
 
       // Calculate visibility with smooth fade zones
-      const fadeZoneStart = -10;  // Start fading out
-      const fadeZoneEnd = -30;    // Completely hidden
+      const fadeZoneStart = -10; // Start fading out
+      const fadeZoneEnd = -30; // Completely hidden
       const isVisible = worldPos.z > fadeZoneEnd;
 
       // Calculate fade opacity based on Z position
@@ -273,7 +272,7 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
         zIndex: Math.round(1000 + worldPos.z),
         isVisible,
         fadeOpacity,
-        originalIndex: index
+        originalIndex: index,
       };
     });
 
@@ -314,16 +313,19 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
 
       adjustedPositions[i] = {
         ...pos,
-        scale: Math.max(0.25, adjustedScale) // Ensure minimum scale
+        scale: Math.max(0.25, adjustedScale), // Ensure minimum scale
       };
     }
 
     return adjustedPositions;
   }, [imagePositions, rotation, actualSphereRadius, baseImageSize]);
 
-  const clampRotationSpeed = useCallback((speed: number): number => {
-    return Math.max(-maxRotationSpeed, Math.min(maxRotationSpeed, speed));
-  }, [maxRotationSpeed]);
+  const clampRotationSpeed = useCallback(
+    (speed: number): number => {
+      return Math.max(-maxRotationSpeed, Math.min(maxRotationSpeed, speed));
+    },
+    [maxRotationSpeed],
+  );
 
   // ==========================================
   // PHYSICS & MOMENTUM
@@ -332,10 +334,10 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
   const updateMomentum = useCallback(() => {
     if (isDragging) return;
 
-    setVelocity(prev => {
+    setVelocity((prev) => {
       const newVelocity = {
         x: prev.x * momentumDecay,
-        y: prev.y * momentumDecay
+        y: prev.y * momentumDecay,
       };
 
       // Stop animation if velocity is too low and auto-rotate is off
@@ -346,7 +348,7 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
       return newVelocity;
     });
 
-    setRotation(prev => {
+    setRotation((prev) => {
       let newY = prev.y;
 
       // Add auto-rotation to Y axis (horizontal rotation)
@@ -360,7 +362,7 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
       return {
         x: SPHERE_MATH.normalizeAngle(prev.x + clampRotationSpeed(velocity.x)),
         y: SPHERE_MATH.normalizeAngle(newY),
-        z: prev.z
+        z: prev.z,
       };
     });
   }, [isDragging, momentumDecay, velocity, clampRotationSpeed, autoRotate, autoRotateSpeed]);
@@ -376,31 +378,34 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
     lastMousePos.current = { x: e.clientX, y: e.clientY };
   }, []);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging) return;
 
-    const deltaX = e.clientX - lastMousePos.current.x;
-    const deltaY = e.clientY - lastMousePos.current.y;
+      const deltaX = e.clientX - lastMousePos.current.x;
+      const deltaY = e.clientY - lastMousePos.current.y;
 
-    const rotationDelta = {
-      x: -deltaY * dragSensitivity,
-      y: deltaX * dragSensitivity
-    };
+      const rotationDelta = {
+        x: -deltaY * dragSensitivity,
+        y: deltaX * dragSensitivity,
+      };
 
-    setRotation(prev => ({
-      x: SPHERE_MATH.normalizeAngle(prev.x + clampRotationSpeed(rotationDelta.x)),
-      y: SPHERE_MATH.normalizeAngle(prev.y + clampRotationSpeed(rotationDelta.y)),
-      z: prev.z
-    }));
+      setRotation((prev) => ({
+        x: SPHERE_MATH.normalizeAngle(prev.x + clampRotationSpeed(rotationDelta.x)),
+        y: SPHERE_MATH.normalizeAngle(prev.y + clampRotationSpeed(rotationDelta.y)),
+        z: prev.z,
+      }));
 
-    // Update velocity for momentum
-    setVelocity({
-      x: clampRotationSpeed(rotationDelta.x),
-      y: clampRotationSpeed(rotationDelta.y)
-    });
+      // Update velocity for momentum
+      setVelocity({
+        x: clampRotationSpeed(rotationDelta.x),
+        y: clampRotationSpeed(rotationDelta.y),
+      });
 
-    lastMousePos.current = { x: e.clientX, y: e.clientY };
-  }, [isDragging, dragSensitivity, clampRotationSpeed]);
+      lastMousePos.current = { x: e.clientX, y: e.clientY };
+    },
+    [isDragging, dragSensitivity, clampRotationSpeed],
+  );
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -414,32 +419,35 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
     lastMousePos.current = { x: touch.clientX, y: touch.clientY };
   }, []);
 
-  const handleTouchMove = useCallback((e: TouchEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      if (!isDragging) return;
+      e.preventDefault();
 
-    const touch = e.touches[0];
-    const deltaX = touch.clientX - lastMousePos.current.x;
-    const deltaY = touch.clientY - lastMousePos.current.y;
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - lastMousePos.current.x;
+      const deltaY = touch.clientY - lastMousePos.current.y;
 
-    const rotationDelta = {
-      x: -deltaY * dragSensitivity,
-      y: deltaX * dragSensitivity
-    };
+      const rotationDelta = {
+        x: -deltaY * dragSensitivity,
+        y: deltaX * dragSensitivity,
+      };
 
-    setRotation(prev => ({
-      x: SPHERE_MATH.normalizeAngle(prev.x + clampRotationSpeed(rotationDelta.x)),
-      y: SPHERE_MATH.normalizeAngle(prev.y + clampRotationSpeed(rotationDelta.y)),
-      z: prev.z
-    }));
+      setRotation((prev) => ({
+        x: SPHERE_MATH.normalizeAngle(prev.x + clampRotationSpeed(rotationDelta.x)),
+        y: SPHERE_MATH.normalizeAngle(prev.y + clampRotationSpeed(rotationDelta.y)),
+        z: prev.z,
+      }));
 
-    setVelocity({
-      x: clampRotationSpeed(rotationDelta.x),
-      y: clampRotationSpeed(rotationDelta.y)
-    });
+      setVelocity({
+        x: clampRotationSpeed(rotationDelta.x),
+        y: clampRotationSpeed(rotationDelta.y),
+      });
 
-    lastMousePos.current = { x: touch.clientX, y: touch.clientY };
-  }, [isDragging, dragSensitivity, clampRotationSpeed]);
+      lastMousePos.current = { x: touch.clientX, y: touch.clientY };
+    },
+    [isDragging, dragSensitivity, clampRotationSpeed],
+  );
 
   const handleTouchEnd = useCallback(() => {
     setIsDragging(false);
@@ -481,18 +489,18 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
     if (!container) return;
 
     // Mouse events
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
 
     // Touch events
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd);
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    document.addEventListener("touchend", handleTouchEnd);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
     };
   }, [isMounted, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd]);
 
@@ -503,44 +511,47 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
   // Calculate world positions once per render
   const worldPositions = calculateWorldPositions();
 
-  const renderImageNode = useCallback((image: ImageData, index: number) => {
-    const position = worldPositions[index];
+  const renderImageNode = useCallback(
+    (image: ImageData, index: number) => {
+      const position = worldPositions[index];
 
-    if (!position || !position.isVisible) return null;
+      if (!position || !position.isVisible) return null;
 
-    const imageSize = baseImageSize * position.scale;
-    const isHovered = hoveredIndex === index;
-    const finalScale = isHovered ? Math.min(1.2, 1.2 / position.scale) : 1;
+      const imageSize = baseImageSize * position.scale;
+      const isHovered = hoveredIndex === index;
+      const finalScale = isHovered ? Math.min(1.2, 1.2 / position.scale) : 1;
 
-    return (
-      <div
-        key={image.id}
-        className="absolute cursor-pointer select-none transition-transform duration-200 ease-out"
-        style={{
-          width: `${imageSize}px`,
-          height: `${imageSize}px`,
-          left: `${containerSize/2 + position.x}px`,
-          top: `${containerSize/2 + position.y}px`,
-          opacity: position.fadeOpacity,
-          transform: `translate(-50%, -50%) scale(${finalScale})`,
-          zIndex: position.zIndex
-        }}
-        onMouseEnter={() => setHoveredIndex(index)}
-        onMouseLeave={() => setHoveredIndex(null)}
-        onClick={() => setSelectedImage(image)}
-      >
-        <div className="relative w-full h-full rounded-full overflow-hidden shadow-lg border-2 border-white/20">
-          <img
-            src={image.src}
-            alt={image.alt}
-            className="w-full h-full object-cover"
-            draggable={false}
-            loading={index < 3 ? 'eager' : 'lazy'}
-          />
+      return (
+        <div
+          key={image.id}
+          className="absolute cursor-pointer select-none transition-transform duration-200 ease-out"
+          style={{
+            width: `${imageSize}px`,
+            height: `${imageSize}px`,
+            left: `${containerSize / 2 + position.x}px`,
+            top: `${containerSize / 2 + position.y}px`,
+            opacity: position.fadeOpacity,
+            transform: `translate(-50%, -50%) scale(${finalScale})`,
+            zIndex: position.zIndex,
+          }}
+          onMouseEnter={() => setHoveredIndex(index)}
+          onMouseLeave={() => setHoveredIndex(null)}
+          onClick={() => setSelectedImage(image)}
+        >
+          <div className="relative w-full h-full rounded-full overflow-hidden shadow-lg border-2 border-white/20">
+            <img
+              src={image.src}
+              alt={image.alt}
+              className="w-full h-full object-cover"
+              draggable={false}
+              loading={index < 3 ? "eager" : "lazy"}
+            />
+          </div>
         </div>
-      </div>
-    );
-  }, [worldPositions, baseImageSize, containerSize, hoveredIndex]);
+      );
+    },
+    [worldPositions, baseImageSize, containerSize, hoveredIndex],
+  );
 
   const renderSpotlightModal = () => {
     if (!selectedImage) return null;
@@ -550,22 +561,18 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30"
         onClick={() => setSelectedImage(null)}
         style={{
-          animation: 'fadeIn 0.3s ease-out'
+          animation: "fadeIn 0.3s ease-out",
         }}
       >
         <div
           className="bg-background rounded-xl max-w-md w-full overflow-hidden shadow-xl border border-border"
           onClick={(e) => e.stopPropagation()}
           style={{
-            animation: 'scaleIn 0.3s ease-out'
+            animation: "scaleIn 0.3s ease-out",
           }}
         >
           <div className="relative aspect-square">
-            <img
-              src={selectedImage.src}
-              alt={selectedImage.alt}
-              className="w-full h-full object-cover"
-            />
+            <img src={selectedImage.src} alt={selectedImage.alt} className="w-full h-full object-cover" />
             <button
               onClick={() => setSelectedImage(null)}
               className="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full text-white flex items-center justify-center hover:bg-black/70 transition-all cursor-pointer"
@@ -576,12 +583,8 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
 
           {(selectedImage.title || selectedImage.description) && (
             <div className="p-6">
-              {selectedImage.title && (
-                <h3 className="text-xl font-bold mb-2 text-foreground">{selectedImage.title}</h3>
-              )}
-              {selectedImage.description && (
-                <p className="text-muted-foreground">{selectedImage.description}</p>
-              )}
+              {selectedImage.title && <h3 className="text-xl font-bold mb-2 text-foreground">{selectedImage.title}</h3>}
+              {selectedImage.description && <p className="text-muted-foreground">{selectedImage.description}</p>}
             </div>
           )}
         </div>
@@ -640,12 +643,12 @@ const SphereImageGrid: React.FC<SphereImageGridProps> = ({
         style={{
           width: containerSize,
           height: containerSize,
-          perspective: `${perspective}px`
+          perspective: `${perspective}px`,
         }}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
       >
-        <div className="relative w-full h-full" style={{ zIndex: 10 }}>
+        <div className="relative w-full h-full" style={{ zIndex: 20 }}>
           {images.map((image, index) => renderImageNode(image, index))}
         </div>
       </div>

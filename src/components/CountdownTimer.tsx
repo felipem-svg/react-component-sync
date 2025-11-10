@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface CountdownTimerProps {
   targetDate: string;
@@ -48,16 +49,56 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
     return null;
   }
 
+  const totalSeconds = timeLeft.days * 86400 + timeLeft.hours * 3600 + timeLeft.minutes * 60 + timeLeft.seconds;
+  const isUrgent = totalSeconds < 60;
+
   return (
-    <div className="flex items-center justify-center gap-2 text-sm bg-muted/50 px-4 py-2 rounded-lg border border-border">
-      <Clock className="w-4 h-4 text-muted-foreground" />
-      <span className="text-foreground font-medium">
+    <motion.div 
+      className="flex items-center justify-center gap-2 text-sm bg-muted/50 px-4 py-2 rounded-lg border border-border"
+      animate={isUrgent ? {
+        scale: [1, 1.05, 1],
+        boxShadow: [
+          "0 0 0 0 hsl(var(--primary) / 0)",
+          "0 0 0 8px hsl(var(--primary) / 0.2)",
+          "0 0 0 0 hsl(var(--primary) / 0)"
+        ]
+      } : {}}
+      transition={{
+        duration: 1,
+        repeat: isUrgent ? Infinity : 0,
+        ease: "easeInOut"
+      }}
+    >
+      <motion.div
+        animate={isUrgent ? {
+          rotate: [0, -10, 10, -10, 10, 0],
+        } : {}}
+        transition={{
+          duration: 0.5,
+          repeat: isUrgent ? Infinity : 0,
+          repeatDelay: 0.5
+        }}
+      >
+        <Clock className={`w-4 h-4 ${isUrgent ? 'text-primary' : 'text-muted-foreground'}`} />
+      </motion.div>
+      <span className={`font-medium ${isUrgent ? 'text-primary' : 'text-foreground'}`}>
         Próximo giro em:{" "}
         {timeLeft.days > 0 && <span>{timeLeft.days}d </span>}
         {(timeLeft.days > 0 || timeLeft.hours > 0) && <span>{timeLeft.hours}h </span>}
-        <span>{String(timeLeft.minutes).padStart(2, '0')}m </span>
-        <span>{String(timeLeft.seconds).padStart(2, '0')}s</span>
+        <motion.span
+          animate={isUrgent ? { scale: [1, 1.15, 1] } : {}}
+          transition={{ duration: 0.3, repeat: isUrgent ? Infinity : 0 }}
+        >
+          {String(timeLeft.minutes).padStart(2, '0')}m{" "}
+        </motion.span>
+        <motion.span
+          animate={isUrgent ? { scale: [1, 1.2, 1] } : {}}
+          transition={{ duration: 0.5, repeat: isUrgent ? Infinity : 0 }}
+          className="font-bold"
+        >
+          {String(timeLeft.seconds).padStart(2, '0')}s
+        </motion.span>
       </span>
-    </div>
+    </motion.div>
   );
 }

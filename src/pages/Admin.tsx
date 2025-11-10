@@ -12,6 +12,7 @@ interface Prize {
   id: number;
   label: string;
   color: string;
+  weight: number;
 }
 
 export default function Admin() {
@@ -36,6 +37,7 @@ export default function Admin() {
         id: prize.id,
         label: prize.label,
         color: prize.color,
+        weight: prize.weight || 10,
       }));
 
       setPrizes(formattedPrizes);
@@ -66,6 +68,7 @@ export default function Admin() {
         label: prize.label,
         color: prize.color,
         position: index + 1,
+        weight: prize.weight || 10,
       }));
 
       const { error: insertError } = await supabase

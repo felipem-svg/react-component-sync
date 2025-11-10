@@ -22,6 +22,7 @@ export type Database = {
           label: string
           position: number
           updated_at: string
+          weight: number
         }
         Insert: {
           color: string
@@ -30,6 +31,7 @@ export type Database = {
           label: string
           position: number
           updated_at?: string
+          weight?: number
         }
         Update: {
           color?: string
@@ -38,6 +40,7 @@ export type Database = {
           label?: string
           position?: number
           updated_at?: string
+          weight?: number
         }
         Relationships: []
       }

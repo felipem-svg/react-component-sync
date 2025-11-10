@@ -44,6 +44,7 @@ const Index = () => {
         id: prize.id,
         label: prize.label,
         color: prize.color,
+        weight: prize.weight || 10,
       }));
 
       setPrizes(formattedPrizes);

@@ -19,6 +19,7 @@ export interface Prize {
   id: number;
   label: string;
   color: string;
+  weight: number;
 }
 
 interface PrizeCustomizerProps {
@@ -33,6 +34,7 @@ const prizeSchema = z.object({
     .min(1, "Nome do prêmio é obrigatório")
     .max(50, "Nome deve ter no máximo 50 caracteres"),
   color: z.string().regex(/^bg-gradient-to-br from-\w+-\d+ to-\w+-\d+$/, "Formato de cor inválido"),
+  weight: z.number().int().min(1, "Peso mínimo é 1").max(100, "Peso máximo é 100"),
 });
 
 const colorOptions = [
@@ -51,21 +53,26 @@ const colorOptions = [
 export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps) => {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [newPrize, setNewPrize] = useState({ label: "", color: colorOptions[0].value });
-  const [errors, setErrors] = useState<{ label?: string; color?: string }>({});
+  const [newPrize, setNewPrize] = useState({ label: "", color: colorOptions[0].value, weight: 10 });
+  const [errors, setErrors] = useState<{ label?: string; color?: string; weight?: string }>({});
   const { toast } = useToast();
 
-  const validatePrize = (label: string, color: string) => {
+  const calculatePercentage = (weight: number) => {
+    const totalWeight = prizes.reduce((sum, p) => sum + p.weight, 0) + weight;
+    return totalWeight > 0 ? Math.round((weight / totalWeight) * 100) : 0;
+  };
+
+  const validatePrize = (label: string, color: string, weight: number) => {
     try {
-      prizeSchema.parse({ label, color });
+      prizeSchema.parse({ label, color, weight });
       setErrors({});
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const fieldErrors: { label?: string; color?: string } = {};
+        const fieldErrors: { label?: string; color?: string; weight?: string } = {};
         error.errors.forEach((err) => {
           if (err.path[0]) {
-            fieldErrors[err.path[0] as "label" | "color"] = err.message;
+            fieldErrors[err.path[0] as "label" | "color" | "weight"] = err.message;
           }
         });
         setErrors(fieldErrors);
@@ -75,7 +82,7 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
   };
 
   const addPrize = () => {
-    if (!validatePrize(newPrize.label, newPrize.color)) {
+    if (!validatePrize(newPrize.label, newPrize.color, newPrize.weight)) {
       return;
     }
 
@@ -90,7 +97,7 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
 
     const newId = Math.max(0, ...prizes.map((p) => p.id)) + 1;
     onPrizesChange([...prizes, { ...newPrize, id: newId }]);
-    setNewPrize({ label: "", color: colorOptions[0].value });
+    setNewPrize({ label: "", color: colorOptions[0].value, weight: 10 });
     setErrors({});
     
     toast({
@@ -99,12 +106,12 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
     });
   };
 
-  const updatePrize = (id: number, label: string, color: string) => {
-    if (!validatePrize(label, color)) {
+  const updatePrize = (id: number, label: string, color: string, weight: number) => {
+    if (!validatePrize(label, color, weight)) {
       return;
     }
 
-    onPrizesChange(prizes.map((p) => (p.id === id ? { ...p, label, color } : p)));
+    onPrizesChange(prizes.map((p) => (p.id === id ? { ...p, label, color, weight } : p)));
     setEditingId(null);
     setErrors({});
     
@@ -135,14 +142,14 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
 
   const resetToDefaults = () => {
     const defaultPrizes: Prize[] = [
-      { id: 1, label: "iPhone 15 Pro", color: "bg-gradient-to-br from-purple-500 to-purple-700" },
-      { id: 2, label: "MacBook Air", color: "bg-gradient-to-br from-blue-500 to-blue-700" },
-      { id: 3, label: "AirPods Pro", color: "bg-gradient-to-br from-green-500 to-green-700" },
-      { id: 4, label: "iPad Mini", color: "bg-gradient-to-br from-yellow-500 to-yellow-700" },
-      { id: 5, label: "Apple Watch", color: "bg-gradient-to-br from-red-500 to-red-700" },
-      { id: 6, label: "Gift Card $100", color: "bg-gradient-to-br from-pink-500 to-pink-700" },
-      { id: 7, label: "Premium Sub", color: "bg-gradient-to-br from-orange-500 to-orange-700" },
-      { id: 8, label: "Mystery Box", color: "bg-gradient-to-br from-teal-500 to-teal-700" },
+      { id: 1, label: "iPhone 15 Pro", color: "bg-gradient-to-br from-purple-500 to-purple-700", weight: 5 },
+      { id: 2, label: "MacBook Air", color: "bg-gradient-to-br from-blue-500 to-blue-700", weight: 3 },
+      { id: 3, label: "AirPods Pro", color: "bg-gradient-to-br from-green-500 to-green-700", weight: 15 },
+      { id: 4, label: "iPad Mini", color: "bg-gradient-to-br from-yellow-500 to-yellow-700", weight: 10 },
+      { id: 5, label: "Apple Watch", color: "bg-gradient-to-br from-red-500 to-red-700", weight: 12 },
+      { id: 6, label: "Gift Card $100", color: "bg-gradient-to-br from-pink-500 to-pink-700", weight: 25 },
+      { id: 7, label: "Premium Sub", color: "bg-gradient-to-br from-orange-500 to-orange-700", weight: 20 },
+      { id: 8, label: "Mystery Box", color: "bg-gradient-to-br from-teal-500 to-teal-700", weight: 10 },
     ];
     onPrizesChange(defaultPrizes);
     
@@ -191,6 +198,43 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
                 />
                 {errors.label && (
                   <p className="text-sm text-destructive">{errors.label}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="new-prize-weight">
+                  Peso / Probabilidade 
+                  <span className="text-xs text-muted-foreground ml-2">
+                    (1-100, maior = mais chance)
+                  </span>
+                </Label>
+                <div className="flex items-center gap-3">
+                  <Input
+                    id="new-prize-weight"
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={newPrize.weight}
+                    onChange={(e) => {
+                      setNewPrize({ ...newPrize, weight: parseInt(e.target.value) || 1 });
+                      setErrors({});
+                    }}
+                    className="w-24"
+                  />
+                  <div className="flex-1">
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-primary transition-all"
+                        style={{ width: `${calculatePercentage(newPrize.weight)}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      ~{calculatePercentage(newPrize.weight)}% de chance
+                    </p>
+                  </div>
+                </div>
+                {errors.weight && (
+                  <p className="text-sm text-destructive">{errors.weight}</p>
                 )}
               </div>
 
@@ -248,19 +292,25 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
                     <EditPrizeForm
                       prize={prize}
                       colorOptions={colorOptions}
-                      onSave={(label, color) => updatePrize(prize.id, label, color)}
+                      onSave={(label, color, weight) => updatePrize(prize.id, label, color, weight)}
                       onCancel={() => {
                         setEditingId(null);
                         setErrors({});
                       }}
                       errors={errors}
                       onErrorsClear={() => setErrors({})}
+                      calculatePercentage={calculatePercentage}
                     />
                   ) : (
                     <div className="flex items-center gap-3">
                       <div className={`w-12 h-12 rounded-md ${prize.color} shrink-0`} />
                       <div className="flex-1 min-w-0">
                         <p className="font-medium truncate">{prize.label}</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span>Peso: {prize.weight}</span>
+                          <span>•</span>
+                          <span>~{calculatePercentage(prize.weight)}% chance</span>
+                        </div>
                       </div>
                       <div className="flex gap-2 shrink-0">
                         <Button
@@ -293,10 +343,11 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
 interface EditPrizeFormProps {
   prize: Prize;
   colorOptions: { label: string; value: string }[];
-  onSave: (label: string, color: string) => void;
+  onSave: (label: string, color: string, weight: number) => void;
   onCancel: () => void;
-  errors: { label?: string; color?: string };
+  errors: { label?: string; color?: string; weight?: string };
   onErrorsClear: () => void;
+  calculatePercentage: (weight: number) => number;
 }
 
 const EditPrizeForm = ({
@@ -306,9 +357,11 @@ const EditPrizeForm = ({
   onCancel,
   errors,
   onErrorsClear,
+  calculatePercentage,
 }: EditPrizeFormProps) => {
   const [label, setLabel] = useState(prize.label);
   const [color, setColor] = useState(prize.color);
+  const [weight, setWeight] = useState(prize.weight);
 
   return (
     <div className="space-y-3">
@@ -325,6 +378,40 @@ const EditPrizeForm = ({
         />
         {errors.label && (
           <p className="text-sm text-destructive">{errors.label}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor={`edit-weight-${prize.id}`}>
+          Peso / Probabilidade
+        </Label>
+        <div className="flex items-center gap-3">
+          <Input
+            id={`edit-weight-${prize.id}`}
+            type="number"
+            min="1"
+            max="100"
+            value={weight}
+            onChange={(e) => {
+              setWeight(parseInt(e.target.value) || 1);
+              onErrorsClear();
+            }}
+            className="w-24"
+          />
+          <div className="flex-1">
+            <div className="h-2 bg-muted rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-primary transition-all"
+                style={{ width: `${calculatePercentage(weight)}%` }}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              ~{calculatePercentage(weight)}% de chance
+            </p>
+          </div>
+        </div>
+        {errors.weight && (
+          <p className="text-sm text-destructive">{errors.weight}</p>
         )}
       </div>
 
@@ -348,7 +435,7 @@ const EditPrizeForm = ({
       </div>
 
       <div className="flex gap-2">
-        <Button onClick={() => onSave(label, color)} className="flex-1">
+        <Button onClick={() => onSave(label, color, weight)} className="flex-1">
           <Save className="w-4 h-4 mr-2" />
           Salvar
         </Button>

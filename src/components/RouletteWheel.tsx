@@ -9,6 +9,7 @@ interface RouletteItem {
   id: number;
   label: string;
   color: string;
+  weight?: number;
 }
 
 interface RouletteWheelProps {
@@ -45,18 +46,31 @@ export function RouletteWheel({
     setShowWinner(false);
     setWinner(null);
 
-    const spins = 5 + Math.random() * 3;
-    const randomDegree = Math.random() * 360;
-    const totalRotation = spins * 360 + randomDegree;
+    // Calcular item vencedor usando pesos
+    const totalWeight = items.reduce((sum, item) => sum + (item.weight || 10), 0);
+    const randomValue = Math.random() * totalWeight;
+    
+    let cumulativeWeight = 0;
+    let selectedIndex = 0;
+    
+    for (let i = 0; i < items.length; i++) {
+      cumulativeWeight += items[i].weight || 10;
+      if (randomValue <= cumulativeWeight) {
+        selectedIndex = i;
+        break;
+      }
+    }
+
+    // Calcular rotação para parar no item selecionado
+    const spins = 5 + Math.random() * 3; // 5-8 voltas completas
+    const targetAngle = selectedIndex * segmentAngle + (segmentAngle / 2);
+    const randomOffset = (Math.random() - 0.5) * (segmentAngle * 0.5); // Variação dentro do segmento
+    const totalRotation = spins * 360 + (360 - targetAngle) + randomOffset;
 
     setRotation(rotation + totalRotation);
 
     setTimeout(() => {
-      const normalizedRotation = (rotation + totalRotation) % 360;
-      const winningIndex = Math.floor(
-        ((360 - normalizedRotation + segmentAngle / 2) % 360) / segmentAngle
-      );
-      const winningItem = items[winningIndex];
+      const winningItem = items[selectedIndex];
       setWinner(winningItem);
       setShowWinner(true);
       setIsSpinning(false);

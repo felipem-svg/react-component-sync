@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Target, Zap, Palette, PartyPopper, ArrowDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 
 const Index = () => {
   const [prizes, setPrizes] = useState<Prize[]>([]);
@@ -179,32 +180,21 @@ const Index = () => {
       </section>
 
       {/* Roulette Section */}
-      <section id="roulette" className="py-20 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
-        <div className="max-w-6xl mx-auto relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-8"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Experimente Agora
-            </h2>
-            <p className="text-muted-foreground text-lg mb-6">
-              Gire a roleta e veja a magia acontecer!
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <RouletteWheel items={prizes} onSpinComplete={handleWinner} />
-          </motion.div>
-        </div>
+      <section id="roulette" className="relative overflow-hidden">
+        <ContainerScroll
+          titleComponent={
+            <>
+              <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
+                Experimente Agora
+              </h1>
+              <p className="text-muted-foreground text-lg">
+                Gire a roleta e veja a magia acontecer!
+              </p>
+            </>
+          }
+        >
+          <RouletteWheel items={prizes} onSpinComplete={handleWinner} />
+        </ContainerScroll>
       </section>
 
       {/* How It Works Section */}

@@ -1,15 +1,18 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { PrizeCustomizer } from "@/components/PrizeCustomizer";
 import { RouletteWheel } from "@/components/RouletteWheel";
+import { AdminStats } from "@/components/admin/AdminStats";
+import { PrizesFilters } from "@/components/admin/PrizesFilters";
+import { PrizesTable } from "@/components/admin/PrizesTable";
+import { PrizesChart } from "@/components/admin/PrizesChart";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { useAdmin } from "@/hooks/useAdmin";
 import { useToast } from "@/hooks/use-toast";
-import { FlipText } from "@/components/ui/flip-text";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { Loader2, BarChart3, Settings, History } from "lucide-react";
 
 interface Prize {
   id: number;
@@ -26,17 +29,32 @@ interface UserPrize {
   user_email: string;
 }
 
-export default function Admin() {
-  const [prizes, setPrizes] = useState<Prize[]>([]);
-  const [userPrizes, setUserPrizes] = useState<UserPrize[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingPrizes, setLoadingPrizes] = useState(true);
+const Admin = () => {
+  const navigate = useNavigate();
+  const { isAdmin, loading: adminLoading } = useAdmin();
   const { toast } = useToast();
+  const [prizes, setPrizes] = useState<Prize[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userPrizes, setUserPrizes] = useState<UserPrize[]>([]);
+  const [loadingPrizes, setLoadingPrizes] = useState(true);
+  
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dateFilter, setDateFilter] = useState("all");
+  const [selectedPrize, setSelectedPrize] = useState("all");
 
   useEffect(() => {
-    fetchPrizes();
-    fetchUserPrizes();
-  }, []);
+    if (!adminLoading && !isAdmin) {
+      navigate("/");
+    }
+  }, [isAdmin, adminLoading, navigate]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      fetchPrizes();
+      fetchUserPrizes();
+    }
+  }, [isAdmin]);
 
   const fetchPrizes = async () => {
     try {
@@ -73,7 +91,7 @@ export default function Admin() {
       const { error: deleteError } = await supabase
         .from("roulette_prizes")
         .delete()
-        .neq("id", 0); // Delete all
+        .neq("id", 0);
 
       if (deleteError) throw deleteError;
 
@@ -96,7 +114,6 @@ export default function Admin() {
         description: "As alterações foram salvas com sucesso.",
       });
 
-      // Refresh prizes
       await fetchPrizes();
     } catch (error) {
       console.error("Error saving prizes:", error);
@@ -115,7 +132,7 @@ export default function Admin() {
         .from("user_prizes")
         .select("id, prize_label, prize_color, won_at, user_email")
         .order("won_at", { ascending: false })
-        .limit(50);
+        .limit(1000);
 
       if (error) throw error;
 
@@ -140,133 +157,147 @@ export default function Admin() {
     }
   };
 
-  const handleWinner = (winner: Prize) => {
-    console.log("Winner:", winner);
+  // Filter prizes based on search and filters
+  const filteredPrizes = useMemo(() => {
+    return userPrizes.filter((prize) => {
+      // Search filter
+      const matchesSearch =
+        searchTerm === "" ||
+        prize.user_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        prize.prize_label.toLowerCase().includes(searchTerm.toLowerCase());
+
+      // Date filter
+      let matchesDate = true;
+      if (dateFilter !== "all") {
+        const prizeDate = new Date(prize.won_at);
+        const today = new Date();
+        
+        if (dateFilter === "today") {
+          matchesDate = prizeDate.toDateString() === today.toDateString();
+        } else if (dateFilter === "week") {
+          const weekAgo = new Date(today);
+          weekAgo.setDate(weekAgo.getDate() - 7);
+          matchesDate = prizeDate >= weekAgo;
+        } else if (dateFilter === "month") {
+          const monthAgo = new Date(today);
+          monthAgo.setDate(monthAgo.getDate() - 30);
+          matchesDate = prizeDate >= monthAgo;
+        }
+      }
+
+      // Prize filter
+      const matchesPrize =
+        selectedPrize === "all" || prize.prize_label === selectedPrize;
+
+      return matchesSearch && matchesDate && matchesPrize;
+    });
+  }, [userPrizes, searchTerm, dateFilter, selectedPrize]);
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setDateFilter("all");
+    setSelectedPrize("all");
   };
 
-  if (loading) {
+  if (adminLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#9B4B8A] mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Carregando painel...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
       <Navbar />
-      
-      <main className="container mx-auto px-4 pt-24 pb-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="space-y-8"
-        >
-          <div className="text-center">
-            <div className="mb-2">
-          <FlipText 
-            word="Painel Administrativo" 
-            duration={0.5}
-            delayMultiple={0.06}
-            className="text-2xl sm:text-4xl font-bold text-foreground"
-            spacing="space-x-0.5 sm:space-x-1"
-          />
-            </div>
-            <p className="text-muted-foreground">
-              Gerencie os prêmios da roleta
-            </p>
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          Painel Administrativo
+        </h1>
 
-          <div className="grid gap-8 lg:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gerenciar Prêmios</CardTitle>
-                <CardDescription>
-                  Adicione, edite ou remova prêmios da roleta
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+        <Tabs defaultValue="dashboard" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="prizes" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Gerenciar Prêmios
+            </TabsTrigger>
+            <TabsTrigger value="history" className="flex items-center gap-2">
+              <History className="h-4 w-4" />
+              Histórico
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="dashboard">
+            {loadingPrizes ? (
+              <div className="flex justify-center items-center py-16">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <>
+                <AdminStats userPrizes={userPrizes} />
+                <PrizesChart userPrizes={userPrizes} />
+              </>
+            )}
+          </TabsContent>
+
+          <TabsContent value="prizes">
+            <div className="grid lg:grid-cols-2 gap-8">
+              <Card className="p-6">
+                <h2 className="text-2xl font-semibold mb-4">
+                  Personalizar Prêmios
+                </h2>
                 <PrizeCustomizer prizes={prizes} onPrizesChange={handlePrizesChange} />
-              </CardContent>
-            </Card>
+              </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Preview da Roleta</CardTitle>
-                <CardDescription>
-                  Visualize como a roleta ficará com os prêmios atuais
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex justify-center">
-                <RouletteWheel items={prizes} onSpinComplete={handleWinner} />
-              </CardContent>
-            </Card>
-          </div>
+              <Card className="p-6">
+                <h2 className="text-2xl font-semibold mb-4">Preview da Roleta</h2>
+                <RouletteWheel items={prizes} onSpinComplete={() => {}} />
+              </Card>
+            </div>
+          </TabsContent>
 
-          {/* Won Prizes History */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle>Histórico de Prêmios Ganhos</CardTitle>
-                <CardDescription>
-                  Últimos 50 prêmios ganhos pelos usuários
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {loadingPrizes ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                    <p className="mt-4 text-sm text-muted-foreground">Carregando prêmios...</p>
-                  </div>
-                ) : userPrizes.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground">Nenhum prêmio foi ganho ainda.</p>
-                  </div>
+          <TabsContent value="history">
+            {loadingPrizes ? (
+              <div className="flex justify-center items-center py-16">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <>
+                <PrizesFilters
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  dateFilter={dateFilter}
+                  setDateFilter={setDateFilter}
+                  selectedPrize={selectedPrize}
+                  setSelectedPrize={setSelectedPrize}
+                  prizes={prizes}
+                  onClearFilters={handleClearFilters}
+                />
+                
+                {filteredPrizes.length === 0 ? (
+                  <Card className="p-12 text-center">
+                    <History className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                    <h3 className="text-xl font-semibold mb-2">
+                      Nenhum prêmio encontrado
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Ajuste os filtros ou aguarde novos prêmios serem ganhos.
+                    </p>
+                  </Card>
                 ) : (
-                  <ScrollArea className="h-[400px] pr-4">
-                    <div className="space-y-4">
-                      {userPrizes.map((prize, index) => (
-                        <motion.div
-                          key={prize.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.3, delay: index * 0.05 }}
-                          className="flex items-center gap-4 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-                        >
-                          <div
-                            className="w-12 h-12 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: prize.prize_color }}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-foreground truncate">
-                              {prize.prize_label}
-                            </p>
-                            <p className="text-sm text-muted-foreground truncate">
-                              {prize.user_email}
-                            </p>
-                          </div>
-                          <div className="text-right text-sm text-muted-foreground flex-shrink-0">
-                            <p>{format(new Date(prize.won_at), "dd/MM/yyyy", { locale: ptBR })}</p>
-                            <p>{format(new Date(prize.won_at), "HH:mm", { locale: ptBR })}</p>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </ScrollArea>
+                  <PrizesTable prizes={filteredPrizes} />
                 )}
-              </CardContent>
-            </Card>
-          </motion.div>
-        </motion.div>
-      </main>
+              </>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
-}
+};
+
+export default Admin;

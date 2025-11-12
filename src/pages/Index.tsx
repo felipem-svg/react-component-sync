@@ -46,7 +46,7 @@ const Index = () => {
 
     try {
       setCheckingSpinPermission(true);
-      const { data, error } = await supabase.rpc('can_user_spin', {
+      const { data, error } = await supabase.rpc("can_user_spin", {
         _user_id: user.id,
       });
 
@@ -57,7 +57,7 @@ const Index = () => {
       setSpinBlockReason(result.reason);
       setNextAvailable(result.next_available);
     } catch (error) {
-      console.error('Error checking spin permission:', error);
+      console.error("Error checking spin permission:", error);
       setCanSpin(true);
       setSpinBlockReason(null);
     } finally {
@@ -67,10 +67,7 @@ const Index = () => {
 
   const fetchPrizes = async () => {
     try {
-      const { data, error } = await supabase
-        .from("roulette_prizes")
-        .select("*")
-        .order("position", { ascending: true });
+      const { data, error } = await supabase.from("roulette_prizes").select("*").order("position", { ascending: true });
 
       if (error) throw error;
 
@@ -120,15 +117,13 @@ const Index = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from("user_prizes")
-        .insert({
-          user_id: user.id,
-          prize_id: winner.id,
-          prize_label: winner.label,
-          prize_color: winner.color,
-          user_email: user.email || "Sem email",
-        });
+      const { error } = await supabase.from("user_prizes").insert({
+        user_id: user.id,
+        prize_id: winner.id,
+        prize_label: winner.label,
+        prize_color: winner.color,
+        user_email: user.email || "Sem email",
+      });
 
       if (error) throw error;
 
@@ -163,7 +158,7 @@ const Index = () => {
     <div className="min-h-screen w-full bg-background overflow-x-hidden">
       <AuthDialog open={showAuthDialog} onOpenChange={setShowAuthDialog} />
       <Navbar />
-      
+
       {/* Hero Section */}
       <section className="relative py-20 md:py-28 flex items-center justify-center px-3 sm:px-4 overflow-hidden pt-16">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/10" />
@@ -183,15 +178,15 @@ const Index = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="mb-6 flex justify-center lg:justify-start"
             >
-              <FlipText 
-                word="Roleta da Sorte" 
+              <FlipText
+                word="Roleta da Sorte"
                 duration={0.5}
                 delayMultiple={0.1}
                 className="text-3xl sm:text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent"
                 spacing="space-x-0.5 sm:space-x-1 md:space-x-2"
               />
             </motion.div>
-            
+
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -200,7 +195,7 @@ const Index = () => {
             >
               A maneira mais divertida e justa de fazer sorteios, tomar decisões ou simplesmente testar sua sorte!
             </motion.p>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -233,22 +228,24 @@ const Index = () => {
               <img
                 src="/owner-photo.jpg"
                 alt="Criadora da Roleta da Sorte"
-                className="w-64 h-64 md:w-80 md:h-80 rounded-full object-cover border-4 border-accent ring-4 ring-primary/20 shadow-2xl shadow-primary/30"
+                className="w-64 h-64 md:w-80 md:h-80 rounded-full object-cover object-[center_-30px] border-4 border-accent ring-4 ring-primary/20 shadow-2xl shadow-primary/30"
               />
+
               {/* Glow effect */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 blur-xl -z-10" />
             </motion.div>
           </motion.div>
         </div>
-
       </section>
 
-
       {/* Roulette Section */}
-      <section id="roulette" className="relative py-16 md:py-24 px-3 sm:px-4 overflow-hidden bg-gradient-to-b from-background via-card/50 to-background">
+      <section
+        id="roulette"
+        className="relative py-16 md:py-24 px-3 sm:px-4 overflow-hidden bg-gradient-to-b from-background via-card/50 to-background"
+      >
         <div className="max-w-7xl mx-auto">
           {/* Title */}
-          <motion.div 
+          <motion.div
             className="text-center mb-12 md:mb-16"
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -256,8 +253,8 @@ const Index = () => {
             transition={{ duration: 0.6 }}
           >
             <div className="mb-4">
-              <FlipText 
-                word="Experimente Agora" 
+              <FlipText
+                word="Experimente Agora"
                 duration={0.5}
                 delayMultiple={0.08}
                 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground"
@@ -276,8 +273,8 @@ const Index = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, type: "spring" }}
           >
-            <RouletteWheel 
-              items={prizes} 
+            <RouletteWheel
+              items={prizes}
               onSpinComplete={handleWinner}
               disabled={!canSpin || checkingSpinPermission}
               disabledReason={spinBlockReason}
@@ -327,10 +324,8 @@ const Index = () => {
                   </span>
                 </h2>
                 <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
-                  Olá! Sou a criadora da Roleta da Sorte. 
-                  Minha missão é trazer diversão e justiça para sorteios 
-                  e decisões do dia a dia. Com paixão por tecnologia e 
-                  design, criei esta plataforma para tornar cada giro 
+                  Olá! Sou a criadora da Roleta da Sorte. Minha missão é trazer diversão e justiça para sorteios e
+                  decisões do dia a dia. Com paixão por tecnologia e design, criei esta plataforma para tornar cada giro
                   uma experiência mágica! ✨
                 </p>
                 <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
@@ -363,8 +358,8 @@ const Index = () => {
             className="text-center mb-12"
           >
             <div className="mb-4">
-              <FlipText 
-                word="Recompensas da Roleta" 
+              <FlipText
+                word="Recompensas da Roleta"
                 duration={0.5}
                 delayMultiple={0.08}
                 className="text-2xl sm:text-4xl md:text-6xl font-bold text-foreground"
@@ -375,7 +370,7 @@ const Index = () => {
               Descubra os incríveis prêmios que você pode ganhar! Arraste para explorar.
             </p>
           </motion.div>
-          
+
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -391,14 +386,8 @@ const Index = () => {
       {/* Final CTA */}
       <section className="py-20 px-3 sm:px-4 bg-gradient-to-b from-background to-card/40">
         <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Pronto Para Testar Sua Sorte?
-            </h2>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Pronto Para Testar Sua Sorte?</h2>
             <p className="text-muted-foreground text-lg mb-8">
               Não espere mais! Gire a roleta agora e descubra o que o destino preparou para você.
             </p>
@@ -423,14 +412,10 @@ const Index = () => {
                 alt="Criadora"
                 className="w-10 h-10 rounded-full object-cover border-2 border-accent"
               />
-              <p className="text-muted-foreground text-sm">
-                © 2024 Roleta da Sorte • Criado com ❤️
-              </p>
+              <p className="text-muted-foreground text-sm">© 2024 Roleta da Sorte • Criado com ❤️</p>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-xs text-muted-foreground">
-                Desenvolvido com React e Framer Motion
-              </span>
+              <span className="text-xs text-muted-foreground">Desenvolvido com React e Framer Motion</span>
             </div>
           </div>
         </div>

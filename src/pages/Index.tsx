@@ -166,8 +166,8 @@ const Index = () => {
       
       {/* Hero Section */}
       <section className="relative py-20 md:py-28 flex items-center justify-center px-3 sm:px-4 overflow-hidden pt-16">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/8 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/10" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/15 via-transparent to-transparent" />
 
         <div className="grid lg:grid-cols-2 gap-8 items-center z-10 max-w-6xl mx-auto w-full">
           {/* Coluna 1: Texto */}
@@ -245,7 +245,7 @@ const Index = () => {
 
 
       {/* Roulette Section */}
-      <section id="roulette" className="relative py-16 md:py-24 px-3 sm:px-4 overflow-hidden bg-gradient-to-b from-background via-muted/30 to-background">
+      <section id="roulette" className="relative py-16 md:py-24 px-3 sm:px-4 overflow-hidden bg-gradient-to-b from-background via-card/50 to-background">
         <div className="max-w-7xl mx-auto">
           {/* Title */}
           <motion.div 
@@ -288,7 +288,7 @@ const Index = () => {
       </section>
 
       {/* About Section */}
-      <section className="py-20 px-3 sm:px-4 bg-gradient-to-br from-muted/20 via-background to-muted/20">
+      <section className="py-20 px-3 sm:px-4 bg-gradient-to-br from-card/40 via-background to-primary/10">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -354,7 +354,7 @@ const Index = () => {
       </section>
 
       {/* Rewards Section */}
-      <section className="py-20 px-3 sm:px-4 bg-muted/20">
+      <section className="py-20 px-3 sm:px-4 bg-card/30">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -389,7 +389,7 @@ const Index = () => {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-3 sm:px-4 bg-gradient-to-b from-background to-muted/30">
+      <section className="py-20 px-3 sm:px-4 bg-gradient-to-b from-background to-card/40">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -414,7 +414,7 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-4 border-t border-border bg-muted/50">
+      <footer className="py-8 px-4 border-t border-border bg-card/60">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">

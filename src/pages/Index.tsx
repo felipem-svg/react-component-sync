@@ -301,7 +301,7 @@ const Index = () => {
             >
               <div className="relative">
                 <img
-                  src="/owner-photo.jpg"
+                  src="https://gallery-r3de.s3.us-east-2.amazonaws.com/WhatsApp+Image+2025-11-10+at+20.49.23.jpeg"
                   alt="Criadora"
                   className="w-80 h-96 md:w-96 md:h-[28rem] rounded-2xl object-cover border-4 border-accent shadow-2xl shadow-primary/20"
                 />

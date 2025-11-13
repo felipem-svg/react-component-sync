@@ -17,9 +17,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 
-const authSchema = z.object({
+const loginSchema = z.object({
   email: z.string().trim().email({ message: "Email inválido" }),
   password: z.string().min(6, { message: "Senha deve ter no mínimo 6 caracteres" }),
+});
+
+const signupSchema = loginSchema.extend({
+  betboom_id: z.string().trim().min(1, { message: "ID da Betboom é obrigatório" }),
+  whatsapp: z.string().trim().min(10, { message: "WhatsApp deve ter no mínimo 10 dígitos" }),
 });
 
 interface AuthDialogProps {
@@ -31,8 +36,10 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
   const [tab, setTab] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [betboomId, setBetboomId] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; betboom_id?: string; whatsapp?: string }>({});
   
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
@@ -40,15 +47,19 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
 
   const validateForm = () => {
     try {
-      authSchema.parse({ email, password });
+      if (tab === "login") {
+        loginSchema.parse({ email, password });
+      } else {
+        signupSchema.parse({ email, password, betboom_id: betboomId, whatsapp });
+      }
       setErrors({});
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const formattedErrors: { email?: string; password?: string } = {};
+        const formattedErrors: { email?: string; password?: string; betboom_id?: string; whatsapp?: string } = {};
         error.errors.forEach((err) => {
           if (err.path[0]) {
-            formattedErrors[err.path[0] as "email" | "password"] = err.message;
+            formattedErrors[err.path[0] as "email" | "password" | "betboom_id" | "whatsapp"] = err.message;
           }
         });
         setErrors(formattedErrors);
@@ -114,7 +125,7 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
           }
         }
       } else {
-        const { error } = await signUp(email, password);
+        const { error } = await signUp(email, password, { betboom_id: betboomId, whatsapp });
         
         if (error) {
           if (error.message.includes("User already registered")) {
@@ -137,11 +148,15 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
 
         toast({
           title: "Cadastro realizado!",
-          description: "Você foi cadastrado com sucesso. Faça login para continuar.",
+          description: "Bem-vindo! Você já pode girar a roleta.",
         });
         
+        onOpenChange(false);
         setTab("login");
+        setEmail("");
         setPassword("");
+        setBetboomId("");
+        setWhatsapp("");
       }
     } catch (error) {
       toast({
@@ -242,6 +257,36 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                 />
                 {errors.password && (
                   <p className="text-sm text-destructive">{errors.password}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="signup-betboom">ID Betboom</Label>
+                <Input
+                  id="signup-betboom"
+                  type="text"
+                  placeholder="Seu ID da Betboom"
+                  value={betboomId}
+                  onChange={(e) => setBetboomId(e.target.value)}
+                  disabled={loading}
+                />
+                {errors.betboom_id && (
+                  <p className="text-sm text-destructive">{errors.betboom_id}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="signup-whatsapp">WhatsApp</Label>
+                <Input
+                  id="signup-whatsapp"
+                  type="tel"
+                  placeholder="(XX) XXXXX-XXXX"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  disabled={loading}
+                />
+                {errors.whatsapp && (
+                  <p className="text-sm text-destructive">{errors.whatsapp}</p>
                 )}
               </div>
 

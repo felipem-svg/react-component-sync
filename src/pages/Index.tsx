@@ -324,9 +324,8 @@ const Index = () => {
                   </span>
                 </h2>
                 <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
-                  Olá! Sou a criadora da Roleta da Sorte. Minha missão é trazer diversão e justiça para sorteios e
-                  decisões do dia a dia. Com paixão por tecnologia e design, criei esta plataforma para tornar cada giro
-                  uma experiência mágica! ✨
+                  Olá! Sou a Malu criadora da Roleta da Sorte, jogadora a mais de 5 anos. Minha missão é ajudar os
+                  jogadores que querem ser realmente bons com a melhor experiência na minha comunidade! ✨
                 </p>
                 <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
                   <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full border border-primary/30">

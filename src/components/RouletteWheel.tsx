@@ -118,14 +118,14 @@ export function RouletteWheel({
       return;
     }
 
-    const totalWeight = eligibleItems.reduce((sum, item) => sum + (item.weight || 10), 0);
+    const totalWeight = eligibleItems.reduce((sum, item) => sum + (item.weight || 0), 0);
     const randomValue = Math.random() * totalWeight;
     
     let cumulativeWeight = 0;
     let selectedIndex = 0;
     
     for (let i = 0; i < eligibleItems.length; i++) {
-      cumulativeWeight += eligibleItems[i].weight || 10;
+      cumulativeWeight += eligibleItems[i].weight || 0;
       if (randomValue <= cumulativeWeight) {
         selectedIndex = i;
         break;

@@ -34,7 +34,7 @@ const prizeSchema = z.object({
     .min(1, "Nome do prêmio é obrigatório")
     .max(50, "Nome deve ter no máximo 50 caracteres"),
   color: z.string().regex(/^bg-gradient-to-br from-\w+-\d+ to-\w+-\d+$/, "Formato de cor inválido"),
-  weight: z.number().int().min(1, "Peso mínimo é 1").max(1000000, "Peso máximo é 1.000.000"),
+  weight: z.number().int().min(0, "Peso mínimo é 0").max(100, "Peso máximo é 100"),
 });
 
 const colorOptions = [
@@ -58,17 +58,14 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
   const { toast } = useToast();
 
   const calculatePercentage = (weight: number, showDecimals: boolean = false) => {
-    const totalWeight = prizes.reduce((sum, p) => sum + p.weight, 0) + weight;
+    const totalWeight = prizes.reduce((sum, p) => sum + p.weight, 0);
     if (totalWeight === 0) return "0";
     
     const percentage = (weight / totalWeight) * 100;
     
-    // Se for muito pequeno, mostrar com mais decimais
-    if (percentage < 1 && showDecimals) {
-      return percentage.toFixed(4);
-    }
+    if (percentage === 0) return "0";
     
-    // Se for pequeno mas não minúsculo, mostrar 2 decimais
+    // Se for pequeno, mostrar 2 decimais
     if (percentage < 10) {
       return percentage.toFixed(2);
     }
@@ -202,8 +199,8 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
             <p className="pt-2 font-medium">Exemplos práticos:</p>
             <ul className="pl-4 space-y-1">
               <li>✓ 5 prêmios com peso <strong>1</strong> + 1 prêmio com peso <strong>95</strong> = 1% vs 95%</li>
-              <li>✓ Peso <strong>10.000</strong> vs peso <strong>1</strong> = 99.99% vs 0.01%</li>
-              <li>✓ Todos com peso <strong>100</strong> = chances iguais</li>
+              <li>✓ Peso <strong>50</strong> vs peso <strong>0</strong> = 100% vs 0% (não cai)</li>
+              <li>✓ Todos com peso <strong>10</strong> = chances iguais</li>
             </ul>
           </div>
         </div>
@@ -238,18 +235,18 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
                 <Label htmlFor="new-prize-weight">
                   Peso / Probabilidade 
                   <span className="text-xs text-muted-foreground ml-2">
-                    (1-1.000.000)
+                    (0-100)
                   </span>
                 </Label>
                 <div className="flex items-center gap-3">
                   <Input
                     id="new-prize-weight"
                     type="number"
-                    min="1"
-                    max="1000000"
+                    min="0"
+                    max="100"
                     value={newPrize.weight}
                     onChange={(e) => {
-                      setNewPrize({ ...newPrize, weight: parseInt(e.target.value) || 1 });
+                      setNewPrize({ ...newPrize, weight: parseInt(e.target.value) || 0 });
                       setErrors({});
                     }}
                     className="w-24"
@@ -262,8 +259,8 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
                       />
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {parseFloat(calculatePercentage(newPrize.weight, true)) < 1 ? (
-                        <>{calculatePercentage(newPrize.weight, true)}% (muito raro)</>
+                      {parseFloat(calculatePercentage(newPrize.weight)) === 0 ? (
+                        <>0% (não cai)</>
                       ) : (
                         <>{calculatePercentage(newPrize.weight)}% de chance</>
                       )}
@@ -422,18 +419,18 @@ const EditPrizeForm = ({
         <Label htmlFor={`edit-weight-${prize.id}`}>
           Peso / Probabilidade
           <span className="text-xs text-muted-foreground ml-2">
-            (1-1.000.000)
+            (0-100)
           </span>
         </Label>
         <div className="flex items-center gap-3">
           <Input
             id={`edit-weight-${prize.id}`}
             type="number"
-            min="1"
-            max="1000000"
+            min="0"
+            max="100"
             value={weight}
             onChange={(e) => {
-              setWeight(parseInt(e.target.value) || 1);
+              setWeight(parseInt(e.target.value) || 0);
               onErrorsClear();
             }}
             className="w-24"
@@ -446,8 +443,8 @@ const EditPrizeForm = ({
               />
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {parseFloat(calculatePercentage(weight, true)) < 1 ? (
-                <>{calculatePercentage(weight, true)}% (muito raro)</>
+              {parseFloat(calculatePercentage(weight)) === 0 ? (
+                <>0% (não cai)</>
               ) : (
                 <>{calculatePercentage(weight)}% de chance</>
               )}

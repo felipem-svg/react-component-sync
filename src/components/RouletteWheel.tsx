@@ -110,21 +110,32 @@ export function RouletteWheel({
     setShowWinner(false);
     setWinner(null);
 
-    const totalWeight = items.reduce((sum, item) => sum + (item.weight || 10), 0);
+    // Filtrar apenas itens com peso > 0
+    const eligibleItems = items.filter(item => (item.weight || 0) > 0);
+    
+    if (eligibleItems.length === 0) {
+      setIsSpinning(false);
+      return;
+    }
+
+    const totalWeight = eligibleItems.reduce((sum, item) => sum + (item.weight || 10), 0);
     const randomValue = Math.random() * totalWeight;
     
     let cumulativeWeight = 0;
     let selectedIndex = 0;
     
-    for (let i = 0; i < items.length; i++) {
-      cumulativeWeight += items[i].weight || 10;
+    for (let i = 0; i < eligibleItems.length; i++) {
+      cumulativeWeight += eligibleItems[i].weight || 10;
       if (randomValue <= cumulativeWeight) {
         selectedIndex = i;
         break;
       }
     }
 
-    const segmentCenterAngle = selectedIndex * segmentAngle + (segmentAngle / 2);
+    const selectedItem = eligibleItems[selectedIndex];
+    const actualIndex = items.indexOf(selectedItem);
+
+    const segmentCenterAngle = actualIndex * segmentAngle + (segmentAngle / 2);
     const spins = 5 + Math.random() * 3;
     const currentSegmentAbsolutePosition = (rotation + segmentCenterAngle) % 360;
     const rotationNeeded = (360 - currentSegmentAbsolutePosition) % 360;
@@ -133,7 +144,7 @@ export function RouletteWheel({
     setRotation(totalRotation);
 
     setTimeout(() => {
-      const winningItem = items[selectedIndex];
+      const winningItem = selectedItem;
       setWinner(winningItem);
       setShowWinner(true);
       setIsSpinning(false);

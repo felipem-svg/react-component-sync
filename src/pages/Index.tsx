@@ -276,8 +276,8 @@ const Index = () => {
             <RouletteWheel
               items={prizes}
               onSpinComplete={handleWinner}
-              disabled={!canSpin || checkingSpinPermission}
-              disabledReason={spinBlockReason}
+              disabled={!user || !canSpin || checkingSpinPermission}
+              disabledReason={!user ? "Faça login para girar a roleta" : spinBlockReason}
               nextAvailable={nextAvailable}
             />
           </motion.div>

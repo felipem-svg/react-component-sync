@@ -16,9 +16,16 @@ const loginSchema = z.object({
   password: z.string().min(6, { message: "Senha deve ter no mínimo 6 caracteres" }),
 });
 
+const signupSchema = loginSchema.extend({
+  betboom_id: z.string().trim().min(1, { message: "ID da Betboom é obrigatório" }),
+  whatsapp: z.string().trim().min(10, { message: "WhatsApp deve ter no mínimo 10 dígitos" }),
+});
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [betboomId, setBetboomId] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signIn, signUp, user } = useAuth();
@@ -49,7 +56,12 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const validation = loginSchema.safeParse({ email, password });
+    const schema = isSignUp ? signupSchema : loginSchema;
+    const dataToValidate = isSignUp 
+      ? { email, password, betboom_id: betboomId, whatsapp }
+      : { email, password };
+    
+    const validation = schema.safeParse(dataToValidate);
     if (!validation.success) {
       toast({
         title: "Erro de validação",
@@ -63,7 +75,7 @@ export default function Login() {
 
     try {
       if (isSignUp) {
-        const { error } = await signUp(email, password);
+        const { error } = await signUp(email, password, { betboom_id: betboomId, whatsapp });
         if (error) {
           toast({
             title: "Erro ao criar conta",
@@ -158,6 +170,32 @@ export default function Login() {
                   required
                 />
               </div>
+              {isSignUp && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="betboom">ID Betboom</Label>
+                    <Input
+                      id="betboom"
+                      type="text"
+                      placeholder="Seu ID da Betboom"
+                      value={betboomId}
+                      onChange={(e) => setBetboomId(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="whatsapp">WhatsApp</Label>
+                    <Input
+                      id="whatsapp"
+                      type="tel"
+                      placeholder="(XX) XXXXX-XXXX"
+                      value={whatsapp}
+                      onChange={(e) => setWhatsapp(e.target.value)}
+                      required
+                    />
+                  </div>
+                </>
+              )}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Aguarde..." : isSignUp ? "Criar Conta" : "Entrar"}
               </Button>

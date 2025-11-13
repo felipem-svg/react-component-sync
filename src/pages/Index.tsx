@@ -331,15 +331,15 @@ const Index = () => {
                 <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
                   <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full border border-primary/30">
                     <span className="text-2xl">🎯</span>
-                    <span className="text-sm text-foreground">Sorteios Justos</span>
+                    <span className="text-sm text-foreground"> Uma Chance toda semana</span>
                   </div>
                   <div className="flex items-center gap-2 bg-secondary/10 px-4 py-2 rounded-full border border-secondary/30">
                     <span className="text-2xl">✨</span>
-                    <span className="text-sm text-foreground">Design Mágico</span>
+                    <span className="text-sm text-foreground"> Um Iphone 17 </span>
                   </div>
                   <div className="flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-full border border-accent/30">
                     <span className="text-2xl">💜</span>
-                    <span className="text-sm text-foreground">Feito com Amor</span>
+                    <span className="text-sm text-foreground"> Time Malu </span>
                   </div>
                 </div>
               </motion.div>

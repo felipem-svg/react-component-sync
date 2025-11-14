@@ -70,7 +70,7 @@ const Admin = () => {
         id: prize.id,
         label: prize.label,
         color: prize.color,
-        weight: prize.weight || 10,
+        weight: prize.weight ?? 10,
       }));
 
       setPrizes(formattedPrizes);
@@ -101,7 +101,7 @@ const Admin = () => {
         label: prize.label,
         color: prize.color,
         position: index + 1,
-        weight: prize.weight || 10,
+        weight: prize.weight ?? 10,
       }));
 
       const { error: insertError } = await supabase

@@ -34,7 +34,7 @@ const prizeSchema = z.object({
     .min(1, "Nome do prêmio é obrigatório")
     .max(50, "Nome deve ter no máximo 50 caracteres"),
   color: z.string().regex(/^bg-gradient-to-br from-\w+-\d+ to-\w+-\d+$/, "Formato de cor inválido"),
-  weight: z.number().int().min(0, "Peso mínimo é 0").max(100, "Peso máximo é 100"),
+  weight: z.number().min(0, "Peso mínimo é 0").max(1, "Peso máximo é 1"),
 });
 
 const colorOptions = [
@@ -53,7 +53,7 @@ const colorOptions = [
 export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps) => {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [newPrize, setNewPrize] = useState({ label: "", color: colorOptions[0].value, weight: 10 });
+  const [newPrize, setNewPrize] = useState({ label: "", color: colorOptions[0].value, weight: 0.1 });
   const [errors, setErrors] = useState<{ label?: string; color?: string; weight?: string }>({});
   const { toast } = useToast();
 
@@ -194,13 +194,14 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
             Como funciona o sistema de pesos?
           </h4>
           <div className="text-xs text-muted-foreground space-y-1">
-            <p>• <strong>Peso maior = maior chance</strong> de ser sorteado</p>
+            <p>• <strong>Probabilidade maior = maior chance</strong> de ser sorteado</p>
             <p>• A porcentagem é calculada automaticamente baseada no peso total</p>
             <p className="pt-2 font-medium">Exemplos práticos:</p>
             <ul className="pl-4 space-y-1">
-              <li>✓ 5 prêmios com peso <strong>1</strong> + 1 prêmio com peso <strong>95</strong> = 1% vs 95%</li>
-              <li>✓ Peso <strong>50</strong> vs peso <strong>0</strong> = 100% vs 0% (não cai)</li>
-              <li>✓ Todos com peso <strong>10</strong> = chances iguais</li>
+              <li>✓ Peso <strong>0.05</strong> = 5% de probabilidade</li>
+              <li>✓ Peso <strong>0.50</strong> = 50% de probabilidade</li>
+              <li>✓ Peso <strong>0</strong> = 0% (NÃO PODE SER GANHO)</li>
+              <li>✓ Todos com peso <strong>0.10</strong> = chances iguais</li>
             </ul>
           </div>
         </div>
@@ -235,18 +236,19 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
                 <Label htmlFor="new-prize-weight">
                   Peso / Probabilidade 
                   <span className="text-xs text-muted-foreground ml-2">
-                    (0-100)
+                    (0-1)
                   </span>
                 </Label>
                 <div className="flex items-center gap-3">
                   <Input
                     id="new-prize-weight"
                     type="number"
+                    step="0.01"
                     min="0"
-                    max="100"
+                    max="1"
                     value={newPrize.weight}
                     onChange={(e) => {
-                      setNewPrize({ ...newPrize, weight: parseInt(e.target.value) || 0 });
+                      setNewPrize({ ...newPrize, weight: parseFloat(e.target.value) || 0 });
                       setErrors({});
                     }}
                     className="w-24"
@@ -419,18 +421,19 @@ const EditPrizeForm = ({
         <Label htmlFor={`edit-weight-${prize.id}`}>
           Peso / Probabilidade
           <span className="text-xs text-muted-foreground ml-2">
-            (0-100)
+            (0-1)
           </span>
         </Label>
         <div className="flex items-center gap-3">
           <Input
             id={`edit-weight-${prize.id}`}
             type="number"
+            step="0.01"
             min="0"
-            max="100"
+            max="1"
             value={weight}
             onChange={(e) => {
-              setWeight(parseInt(e.target.value) || 0);
+              setWeight(parseFloat(e.target.value) || 0);
               onErrorsClear();
             }}
             className="w-24"

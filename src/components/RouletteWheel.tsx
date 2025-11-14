@@ -236,6 +236,7 @@ export function RouletteWheel({
                     fill={`url(#gradient-${index})`}
                     stroke="#F6D6C6"
                     strokeWidth="3"
+                    opacity={item.weight === 0 ? 0.4 : 1}
                     style={{
                       filter: 'drop-shadow(0 2px 4px rgba(26,15,18,0.3))'
                     }}
@@ -249,9 +250,10 @@ export function RouletteWheel({
                     height="80"
                   >
                     <motion.div 
-                      className="w-full h-full rounded-full bg-[#F6D6C6]/95 flex items-center justify-center shadow-lg border-2 border-[#C2A083]/40"
+                      className="w-full h-full rounded-full bg-[#F6D6C6]/95 flex items-center justify-center shadow-lg border-2 border-[#C2A083]/40 relative"
                       style={{
-                        filter: 'drop-shadow(0 2px 6px rgba(26,15,18,0.3))'
+                        filter: 'drop-shadow(0 2px 6px rgba(26,15,18,0.3))',
+                        opacity: item.weight === 0 ? 0.4 : 1
                       }}
                       animate={isSpinning ? {
                         scale: [1, 1.15, 1],
@@ -267,8 +269,14 @@ export function RouletteWheel({
                         ease: "easeInOut"
                       }}
                     >
+                      {item.weight === 0 && (
+                        <div className="absolute inset-0 flex items-center justify-center text-4xl z-10">
+                          🚫
+                        </div>
+                      )}
                       <motion.span 
                         className="text-5xl"
+                        style={{ opacity: item.weight === 0 ? 0.3 : 1 }}
                         animate={isSpinning ? {
                           rotate: [0, -15, 15, 0],
                         } : {

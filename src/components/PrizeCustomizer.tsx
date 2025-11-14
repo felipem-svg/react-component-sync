@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -54,6 +56,8 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [newPrize, setNewPrize] = useState({ label: "", color: colorOptions[0].value, weight: 0.1 });
+  const [newPrizeNotWinnable, setNewPrizeNotWinnable] = useState(false);
+  const [newPrizePreviousWeight, setNewPrizePreviousWeight] = useState(0.1);
   const [errors, setErrors] = useState<{ label?: string; color?: string; weight?: string }>({});
   const { toast } = useToast();
 
@@ -232,6 +236,29 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
                 )}
               </div>
 
+              <div className="flex items-center gap-2 p-3 border border-border rounded-lg bg-muted/20">
+                <Switch
+                  id="new-not-winnable"
+                  checked={newPrizeNotWinnable}
+                  onCheckedChange={(checked) => {
+                    setNewPrizeNotWinnable(checked);
+                    if (checked) {
+                      setNewPrizePreviousWeight(newPrize.weight);
+                      setNewPrize({ ...newPrize, weight: 0 });
+                    } else {
+                      setNewPrize({ ...newPrize, weight: newPrizePreviousWeight || 0.1 });
+                    }
+                  }}
+                />
+                <Label 
+                  htmlFor="new-not-winnable"
+                  className="cursor-pointer flex items-center gap-2"
+                >
+                  <span className="text-lg">🚫</span>
+                  <span>Prêmio não ganhável (nunca cai na roleta)</span>
+                </Label>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="new-prize-weight">
                   Peso / Probabilidade 
@@ -251,7 +278,8 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
                       setNewPrize({ ...newPrize, weight: parseFloat(e.target.value) || 0 });
                       setErrors({});
                     }}
-                    className="w-24"
+                    disabled={newPrizeNotWinnable}
+                    className={newPrizeNotWinnable ? "opacity-50" : ""}
                   />
                   <div className="flex-1">
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -345,10 +373,32 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span>Peso: {prize.weight}</span>
                           <span>•</span>
-                          <span>~{calculatePercentage(prize.weight)}% chance</span>
+                          {prize.weight === 0 ? (
+                            <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                              🚫 Não ganhável
+                            </Badge>
+                          ) : (
+                            <span>~{calculatePercentage(prize.weight)}% chance</span>
+                          )}
                         </div>
                       </div>
-                      <div className="flex gap-2 shrink-0">
+                      <div className="flex gap-2 shrink-0 items-center">
+                        <div className="flex flex-col items-center gap-1">
+                          <Switch
+                            checked={prize.weight === 0}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                updatePrize(prize.id, prize.label, prize.color, 0);
+                              } else {
+                                updatePrize(prize.id, prize.label, prize.color, 0.1);
+                              }
+                            }}
+                            title={prize.weight === 0 ? "Ativar prêmio" : "Desativar prêmio"}
+                          />
+                          <span className="text-[9px] text-muted-foreground">
+                            {prize.weight === 0 ? "Ativar" : "Desativar"}
+                          </span>
+                        </div>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -398,6 +448,8 @@ const EditPrizeForm = ({
   const [label, setLabel] = useState(prize.label);
   const [color, setColor] = useState(prize.color);
   const [weight, setWeight] = useState(prize.weight);
+  const [isNotWinnable, setIsNotWinnable] = useState(prize.weight === 0);
+  const [previousWeight, setPreviousWeight] = useState(prize.weight === 0 ? 0.1 : prize.weight);
 
   return (
     <div className="space-y-3">
@@ -415,6 +467,29 @@ const EditPrizeForm = ({
         {errors.label && (
           <p className="text-sm text-destructive">{errors.label}</p>
         )}
+      </div>
+
+      <div className="flex items-center gap-2 p-3 border border-border rounded-lg bg-muted/20">
+        <Switch
+          id={`edit-not-winnable-${prize.id}`}
+          checked={isNotWinnable}
+          onCheckedChange={(checked) => {
+            setIsNotWinnable(checked);
+            if (checked) {
+              setPreviousWeight(weight);
+              setWeight(0);
+            } else {
+              setWeight(previousWeight || 0.1);
+            }
+          }}
+        />
+        <Label 
+          htmlFor={`edit-not-winnable-${prize.id}`}
+          className="cursor-pointer flex items-center gap-2"
+        >
+          <span className="text-lg">🚫</span>
+          <span>Prêmio não ganhável (nunca cai na roleta)</span>
+        </Label>
       </div>
 
       <div className="space-y-2">
@@ -436,7 +511,8 @@ const EditPrizeForm = ({
               setWeight(parseFloat(e.target.value) || 0);
               onErrorsClear();
             }}
-            className="w-24"
+            disabled={isNotWinnable}
+            className={isNotWinnable ? "opacity-50" : ""}
           />
           <div className="flex-1">
             <div className="h-2 bg-muted rounded-full overflow-hidden">

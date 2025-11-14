@@ -132,19 +132,27 @@ const Admin = () => {
       setLoadingPrizes(true);
       const { data, error } = await supabase
         .from("user_prizes")
-        .select(`
-          id,
-          prize_label,
-          prize_color,
-          won_at,
-          user_email,
-          user_id,
-          profiles!inner(betboom_id)
-        `)
+        .select("*")
         .order("won_at", { ascending: false })
         .limit(1000);
 
       if (error) throw error;
+
+      // Buscar os betboom_ids dos perfis
+      const userIds = [...new Set(data.map(prize => prize.user_id))];
+      const { data: profilesData, error: profilesError } = await supabase
+        .from("profiles")
+        .select("user_id, betboom_id")
+        .in("user_id", userIds);
+
+      if (profilesError) {
+        console.error("Error fetching profiles:", profilesError);
+      }
+
+      // Criar um map de user_id -> betboom_id
+      const betboomIdMap = new Map(
+        profilesData?.map(profile => [profile.user_id, profile.betboom_id]) || []
+      );
 
       const formattedPrizes: UserPrize[] = data.map((prize) => ({
         id: prize.id,
@@ -152,7 +160,7 @@ const Admin = () => {
         prize_color: prize.prize_color,
         won_at: prize.won_at,
         user_email: prize.user_email || "Usuário desconhecido",
-        betboom_id: prize.profiles?.betboom_id || "N/A",
+        betboom_id: betboomIdMap.get(prize.user_id) || "N/A",
       }));
 
       setUserPrizes(formattedPrizes);

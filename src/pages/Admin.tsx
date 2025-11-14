@@ -28,6 +28,7 @@ interface UserPrize {
   prize_color: string;
   won_at: string;
   user_email: string;
+  betboom_id: string;
 }
 
 const Admin = () => {
@@ -131,7 +132,15 @@ const Admin = () => {
       setLoadingPrizes(true);
       const { data, error } = await supabase
         .from("user_prizes")
-        .select("id, prize_label, prize_color, won_at, user_email")
+        .select(`
+          id,
+          prize_label,
+          prize_color,
+          won_at,
+          user_email,
+          user_id,
+          profiles!inner(betboom_id)
+        `)
         .order("won_at", { ascending: false })
         .limit(1000);
 
@@ -143,6 +152,7 @@ const Admin = () => {
         prize_color: prize.prize_color,
         won_at: prize.won_at,
         user_email: prize.user_email || "Usuário desconhecido",
+        betboom_id: prize.profiles?.betboom_id || "N/A",
       }));
 
       setUserPrizes(formattedPrizes);
@@ -165,7 +175,8 @@ const Admin = () => {
       const matchesSearch =
         searchTerm === "" ||
         prize.user_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        prize.prize_label.toLowerCase().includes(searchTerm.toLowerCase());
+        prize.prize_label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        prize.betboom_id.toLowerCase().includes(searchTerm.toLowerCase());
 
       // Date filter
       let matchesDate = true;

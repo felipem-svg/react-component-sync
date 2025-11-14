@@ -28,6 +28,7 @@ interface UserPrize {
   prize_color: string;
   won_at: string;
   user_email: string;
+  betboom_id: string;
 }
 
 interface PrizesTableProps {
@@ -37,7 +38,7 @@ interface PrizesTableProps {
 export const PrizesTable = ({ prizes }: PrizesTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
-  const [sortBy, setSortBy] = useState<"won_at" | "prize_label" | "user_email">("won_at");
+  const [sortBy, setSortBy] = useState<"won_at" | "prize_label" | "user_email" | "betboom_id">("won_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   // Sort prizes
@@ -73,11 +74,12 @@ export const PrizesTable = ({ prizes }: PrizesTableProps) => {
   };
 
   const exportToCSV = () => {
-    const headers = ["Data/Hora", "Prêmio", "Email do Usuário"];
+    const headers = ["Data/Hora", "Prêmio", "Email do Usuário", "ID Betboom"];
     const rows = prizes.map((prize) => [
       format(new Date(prize.won_at), "dd/MM/yyyy HH:mm:ss", { locale: ptBR }),
       prize.prize_label,
       prize.user_email,
+      prize.betboom_id,
     ]);
 
     const csvContent = [
@@ -139,6 +141,17 @@ export const PrizesTable = ({ prizes }: PrizesTableProps) => {
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
+              <TableHead>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("betboom_id")}
+                  className="flex items-center"
+                >
+                  ID Betboom
+                  <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -173,6 +186,9 @@ export const PrizesTable = ({ prizes }: PrizesTableProps) => {
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {prize.user_email}
+                </TableCell>
+                <TableCell>
+                  <span className="font-mono text-sm">{prize.betboom_id}</span>
                 </TableCell>
               </motion.tr>
             ))}

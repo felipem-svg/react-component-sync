@@ -156,6 +156,18 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
     });
   };
 
+  const togglePrizeActive = (id: number, newWeight: number) => {
+    const prize = prizes.find((p) => p.id === id);
+    onPrizesChange(prizes.map((p) => (p.id === id ? { ...p, weight: newWeight } : p)));
+    
+    toast({
+      title: newWeight === 0 ? "Prêmio desativado" : "Prêmio ativado",
+      description: newWeight === 0 
+        ? `${prize?.label} não cairá mais na roleta` 
+        : `${prize?.label} voltou a ser sorteável`,
+    });
+  };
+
   const resetToDefaults = () => {
     const defaultPrizes: Prize[] = [
       { id: 1, label: "iPhone 15 Pro", color: "bg-gradient-to-br from-purple-500 to-purple-700", weight: 5 },
@@ -350,7 +362,9 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
-                  className="p-3 border border-border rounded-lg bg-card hover:border-primary/50 transition-colors"
+                  className={`p-3 border border-border rounded-lg bg-card hover:border-primary/50 transition-colors ${
+                    prize.weight === 0 ? 'opacity-60 bg-muted/30' : ''
+                  }`}
                 >
                   {editingId === prize.id ? (
                     <EditPrizeForm
@@ -385,18 +399,14 @@ export const PrizeCustomizer = ({ prizes, onPrizesChange }: PrizeCustomizerProps
                       <div className="flex gap-2 shrink-0 items-center">
                         <div className="flex flex-col items-center gap-1">
                           <Switch
-                            checked={prize.weight === 0}
+                            checked={prize.weight > 0}
                             onCheckedChange={(checked) => {
-                              if (checked) {
-                                updatePrize(prize.id, prize.label, prize.color, 0);
-                              } else {
-                                updatePrize(prize.id, prize.label, prize.color, 0.1);
-                              }
+                              togglePrizeActive(prize.id, checked ? 0.1 : 0);
                             }}
-                            title={prize.weight === 0 ? "Ativar prêmio" : "Desativar prêmio"}
+                            title={prize.weight > 0 ? "Desativar prêmio" : "Ativar prêmio"}
                           />
                           <span className="text-[9px] text-muted-foreground">
-                            {prize.weight === 0 ? "Ativar" : "Desativar"}
+                            {prize.weight > 0 ? "Ativo" : "Inativo"}
                           </span>
                         </div>
                         <Button

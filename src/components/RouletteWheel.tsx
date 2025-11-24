@@ -26,30 +26,30 @@ interface RouletteWheelProps {
 
 const getColorLight = (color: string) => {
   const colors: { [key: string]: string } = {
-    "bg-red-500": "#9B4B8A",
-    "bg-blue-500": "#722E73",
-    "bg-green-500": "#C2A083",
-    "bg-yellow-500": "#F6D6C6",
-    "bg-purple-500": "#9B4B8A",
-    "bg-pink-500": "#E1A8D9",
-    "bg-orange-500": "#D4B896",
-    "bg-teal-500": "#A85C87",
+    "bg-red-500": "#F97316",
+    "bg-blue-500": "#F59E0B",
+    "bg-green-500": "#EAB308",
+    "bg-yellow-500": "#FBBF24",
+    "bg-purple-500": "#F97316",
+    "bg-pink-500": "#FB923C",
+    "bg-orange-500": "#FDBA74",
+    "bg-teal-500": "#FCD34D",
   };
-  return colors[color] || "#9B4B8A";
+  return colors[color] || "#F97316";
 };
 
 const getColorDark = (color: string) => {
   const colors: { [key: string]: string } = {
-    "bg-red-500": "#722E73",
-    "bg-blue-500": "#5A2459",
-    "bg-green-500": "#A78A70",
-    "bg-yellow-500": "#C2A083",
-    "bg-purple-500": "#722E73",
-    "bg-pink-500": "#9B4B8A",
-    "bg-orange-500": "#A08060",
-    "bg-teal-500": "#7A3B6A",
+    "bg-red-500": "#C2410C",
+    "bg-blue-500": "#B45309",
+    "bg-green-500": "#A16207",
+    "bg-yellow-500": "#CA8A04",
+    "bg-purple-500": "#C2410C",
+    "bg-pink-500": "#EA580C",
+    "bg-orange-500": "#D97706",
+    "bg-teal-500": "#B45309",
   };
-  return colors[color] || "#722E73";
+  return colors[color] || "#C2410C";
 };
 
 const createSegmentPath = (index: number, total: number, radius: number = 200) => {
@@ -180,25 +180,25 @@ export function RouletteWheel({
         {/* Premium Pointer */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-6 z-20">
           <div className="relative">
-            <div className="w-0 h-0 border-l-[26px] border-l-transparent border-r-[26px] border-r-transparent border-t-[52px] border-t-[#C2A083] drop-shadow-2xl" 
+            <div className="w-0 h-0 border-l-[26px] border-l-transparent border-r-[26px] border-r-transparent border-t-[52px] border-t-accent drop-shadow-2xl" 
               style={{
-                filter: 'drop-shadow(0 4px 12px rgba(194, 160, 131, 0.6))'
+                filter: 'drop-shadow(0 4px 12px hsl(38 92% 50% / 0.6))'
               }}
             />
-            <div className="absolute inset-0 w-0 h-0 border-l-[26px] border-l-transparent border-r-[26px] border-r-transparent border-t-[52px] border-t-[#D4B896] opacity-40 blur-sm" />
+            <div className="absolute inset-0 w-0 h-0 border-l-[26px] border-l-transparent border-r-[26px] border-r-transparent border-t-[52px] border-t-secondary opacity-40 blur-sm" />
           </div>
         </div>
 
         {/* Decorative Outer Ring */}
-        <div className="absolute inset-0 rounded-full border-[10px] border-double border-[#C2A083]/60 -m-2 shadow-2xl" />
+        <div className="absolute inset-0 rounded-full border-[10px] border-double border-accent/60 -m-2 shadow-2xl" />
 
         {/* Wheel Container */}
         <div className="relative w-[320px] h-[320px] sm:w-[420px] sm:h-[420px] lg:w-[500px] lg:h-[500px]">
       <motion.svg
         viewBox="0 0 400 400"
-        className="w-full h-full rounded-full shadow-2xl border-8 border-[#9B4B8A]"
+        className="w-full h-full rounded-full shadow-2xl border-8 border-secondary"
             style={{
-              boxShadow: '0 20px 60px rgba(26, 15, 18, 0.5), 0 0 40px rgba(155, 75, 138, 0.3)'
+              boxShadow: '0 20px 60px rgba(26, 15, 8, 0.5), 0 0 40px hsl(25 95% 53% / 0.3)'
             }}
             animate={{ 
               rotate: rotation
@@ -209,7 +209,7 @@ export function RouletteWheel({
             }}
           >
             {/* Background circle */}
-            <circle cx="200" cy="200" r="200" fill="#311035" />
+            <circle cx="200" cy="200" r="200" fill="#1A0F08" />
             
             {/* Gradients definitions */}
             <defs>
@@ -220,8 +220,9 @@ export function RouletteWheel({
                 </radialGradient>
               ))}
               <radialGradient id="center-gradient" cx="40%" cy="40%">
-                <stop offset="0%" stopColor="#F6D6C6" />
-                <stop offset="100%" stopColor="#C2A083" />
+                <stop offset="0%" stopColor="#FBBF24" />
+                <stop offset="50%" stopColor="#F59E0B" />
+                <stop offset="100%" stopColor="#F97316" />
               </radialGradient>
             </defs>
             
@@ -234,7 +235,7 @@ export function RouletteWheel({
                   <path
                     d={createSegmentPath(index, items.length, 200)}
                     fill={`url(#gradient-${index})`}
-                    stroke="#F6D6C6"
+                    stroke="#F5E6D3"
                     strokeWidth="3"
                     opacity={item.weight === 0 ? 0.4 : 1}
                     style={{
@@ -250,7 +251,7 @@ export function RouletteWheel({
                     height="80"
                   >
                     <motion.div 
-                      className="w-full h-full rounded-full bg-[#F6D6C6]/95 flex items-center justify-center shadow-lg border-2 border-[#C2A083]/40 relative"
+                      className="w-full h-full rounded-full bg-cream-light/95 flex items-center justify-center shadow-lg border-2 border-accent/40 relative"
                       style={{
                         filter: 'drop-shadow(0 2px 6px rgba(26,15,18,0.3))',
                         opacity: item.weight === 0 ? 0.4 : 1
@@ -303,7 +304,7 @@ export function RouletteWheel({
               cy="200" 
               r="50" 
               fill="url(#center-gradient)" 
-              stroke="#722E73" 
+              stroke="#F97316" 
               strokeWidth="6"
               style={{
                 filter: 'drop-shadow(0 8px 16px rgba(26,15,18,0.5))'

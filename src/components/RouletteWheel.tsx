@@ -67,23 +67,18 @@ const createSegmentPath = (index: number, total: number, radius: number = 200) =
   return `M ${radius} ${radius} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
 };
 
-const getGiftPosition = (index: number, total: number, radius: number = 200) => {
+// Nova função para calcular posição em percentagens (para HTML overlay)
+const getGiftPositionPercent = (index: number, total: number) => {
   const angle = (360 / total) * (Math.PI / 180);
   const middleAngle = (index + 0.5) * angle - Math.PI / 2;
   
   // Ajustar distância baseado no número de segmentos
-  // 2 segmentos precisam de mais distância para ficar bem posicionados
   const baseDistance = total <= 2 ? 0.55 : total <= 4 ? 0.50 : 0.55;
-  const distance = radius * baseDistance;
   
-  // Tamanho do ícone maior para melhor visibilidade
-  const iconSize = 60;
-  const offset = iconSize / 2;
-  
+  // Retorna percentagens do centro (50%) + offset
   return {
-    x: radius + distance * Math.cos(middleAngle) - offset,
-    y: radius + distance * Math.sin(middleAngle) - offset,
-    size: iconSize
+    left: 50 + baseDistance * 50 * Math.cos(middleAngle),
+    top: 50 + baseDistance * 50 * Math.sin(middleAngle)
   };
 };
 
@@ -203,15 +198,14 @@ export function RouletteWheel({
 
         {/* Wheel Container */}
         <div className="relative w-[320px] h-[320px] sm:w-[420px] sm:h-[420px] lg:w-[500px] lg:h-[500px]">
-      <motion.svg
-        viewBox="0 0 400 400"
-        className="w-full h-full rounded-full shadow-2xl border-8 border-secondary"
+          {/* SVG Wheel (apenas segmentos, sem foreignObject) */}
+          <motion.svg
+            viewBox="0 0 400 400"
+            className="w-full h-full rounded-full shadow-2xl border-8 border-secondary"
             style={{
               boxShadow: '0 20px 60px rgba(26, 15, 8, 0.5), 0 0 40px hsl(25 95% 53% / 0.3)'
             }}
-            animate={{ 
-              rotate: rotation
-            }}
+            animate={{ rotate: rotation }}
             transition={{
               duration: 4,
               ease: [0.17, 0.67, 0.12, 0.99],
@@ -236,76 +230,19 @@ export function RouletteWheel({
             </defs>
             
             {/* Segments */}
-            {items.map((item, index) => {
-              const giftPos = getGiftPosition(index, items.length, 200);
-              return (
-                <g key={item.id}>
-                  {/* Colored segment */}
-                  <path
-                    d={createSegmentPath(index, items.length, 200)}
-                    fill={`url(#gradient-${index})`}
-                    stroke="#F5E6D3"
-                    strokeWidth="3"
-                    opacity={item.weight === 0 ? 0.4 : 1}
-                    style={{
-                      filter: 'drop-shadow(0 2px 4px rgba(26,15,18,0.3))'
-                    }}
-                  />
-                  
-                  {/* Gift icon in foreignObject */}
-                  <foreignObject
-                    x={giftPos.x}
-                    y={giftPos.y}
-                    width={giftPos.size}
-                    height={giftPos.size}
-                  >
-                    <motion.div 
-                      className="w-full h-full rounded-full bg-cream-light/95 flex items-center justify-center shadow-lg border-2 border-accent/40 relative"
-                      style={{
-                        filter: 'drop-shadow(0 2px 6px rgba(26,15,18,0.3))',
-                        opacity: item.weight === 0 ? 0.4 : 1
-                      }}
-                      animate={isSpinning ? {
-                        scale: [1, 1.15, 1],
-                        rotate: [0, 10, -10, 0],
-                      } : {
-                        scale: 1,
-                        rotate: 0
-                      }}
-                      transition={{
-                        duration: 0.6,
-                        repeat: isSpinning ? Infinity : 0,
-                        delay: index * 0.1,
-                        ease: "easeInOut"
-                      }}
-                    >
-                      {item.weight === 0 && (
-                        <div className="absolute inset-0 flex items-center justify-center text-2xl z-10">
-                          🚫
-                        </div>
-                      )}
-                      <motion.span 
-                        className="text-3xl"
-                        style={{ opacity: item.weight === 0 ? 0.3 : 1 }}
-                        animate={isSpinning ? {
-                          rotate: [0, -15, 15, 0],
-                        } : {
-                          rotate: 0
-                        }}
-                        transition={{
-                          duration: 0.4,
-                          repeat: isSpinning ? Infinity : 0,
-                          delay: index * 0.1 + 0.2,
-                          ease: "easeInOut"
-                        }}
-                      >
-                        🎁
-                      </motion.span>
-                    </motion.div>
-                  </foreignObject>
-                </g>
-              );
-            })}
+            {items.map((item, index) => (
+              <path
+                key={item.id}
+                d={createSegmentPath(index, items.length, 200)}
+                fill={`url(#gradient-${index})`}
+                stroke="#F5E6D3"
+                strokeWidth="3"
+                opacity={item.weight === 0 ? 0.4 : 1}
+                style={{
+                  filter: 'drop-shadow(0 2px 4px rgba(26,15,18,0.3))'
+                }}
+              />
+            ))}
             
             {/* Center circle - must be last for proper z-index */}
             <circle 
@@ -320,6 +257,68 @@ export function RouletteWheel({
               }}
             />
           </motion.svg>
+
+          {/* HTML Overlay com os presentes (sincronizado com o SVG) */}
+          <motion.div
+            className="absolute inset-0 rounded-full pointer-events-none"
+            animate={{ rotate: rotation }}
+            transition={{
+              duration: 4,
+              ease: [0.17, 0.67, 0.12, 0.99],
+            }}
+          >
+            {items.map((item, index) => {
+              const pos = getGiftPositionPercent(index, items.length);
+              return (
+                <motion.div
+                  key={item.id}
+                  className="absolute w-14 h-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cream-light/95 flex items-center justify-center shadow-lg border-2 border-accent/40"
+                  style={{
+                    left: `${pos.left}%`,
+                    top: `${pos.top}%`,
+                    filter: 'drop-shadow(0 2px 6px rgba(26,15,18,0.3))',
+                    opacity: item.weight === 0 ? 0.4 : 1
+                  }}
+                  animate={isSpinning ? {
+                    scale: [1, 1.15, 1],
+                    rotate: [0, 10, -10, 0],
+                  } : {
+                    scale: 1,
+                    rotate: 0
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    repeat: isSpinning ? Infinity : 0,
+                    delay: index * 0.1,
+                    ease: "easeInOut"
+                  }}
+                >
+                  {item.weight === 0 && (
+                    <div className="absolute inset-0 flex items-center justify-center text-2xl z-10">
+                      🚫
+                    </div>
+                  )}
+                  <motion.span 
+                    className="text-3xl"
+                    style={{ opacity: item.weight === 0 ? 0.3 : 1 }}
+                    animate={isSpinning ? {
+                      rotate: [0, -15, 15, 0],
+                    } : {
+                      rotate: 0
+                    }}
+                    transition={{
+                      duration: 0.4,
+                      repeat: isSpinning ? Infinity : 0,
+                      delay: index * 0.1 + 0.2,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    🎁
+                  </motion.span>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </div>
       </motion.div>
 

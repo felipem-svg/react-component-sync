@@ -276,22 +276,16 @@ export function RouletteWheel({
                   style={{
                     left: `${pos.left}%`,
                     top: `${pos.top}%`,
+                    transform: `rotate(${-rotation}deg)`,
                     filter: 'drop-shadow(0 2px 6px rgba(26,15,18,0.3))',
                     opacity: item.weight === 0 ? 0.4 : 1
                   }}
-                  animate={{
-                    rotate: -rotation, // Contra-rotação para manter na vertical
-                    ...(isSpinning ? {
-                      scale: [1, 1.15, 1],
-                    } : {
-                      scale: 1,
-                    })
+                  animate={isSpinning ? {
+                    scale: [1, 1.15, 1],
+                  } : {
+                    scale: 1,
                   }}
                   transition={{
-                    rotate: {
-                      duration: 4,
-                      ease: [0.17, 0.67, 0.12, 0.99],
-                    },
                     scale: {
                       duration: 0.6,
                       repeat: isSpinning ? Infinity : 0,

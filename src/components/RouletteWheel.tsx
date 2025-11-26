@@ -70,11 +70,20 @@ const createSegmentPath = (index: number, total: number, radius: number = 200) =
 const getGiftPosition = (index: number, total: number, radius: number = 200) => {
   const angle = (360 / total) * (Math.PI / 180);
   const middleAngle = (index + 0.5) * angle - Math.PI / 2;
-  const distance = radius * 0.55;
+  
+  // Ajustar distância baseado no número de segmentos
+  // Poucos segmentos = presentes mais perto do centro
+  const baseDistance = total <= 2 ? 0.35 : total <= 4 ? 0.45 : 0.55;
+  const distance = radius * baseDistance;
+  
+  // Tamanho do ícone também ajustado
+  const iconSize = total <= 2 ? 50 : 60;
+  const offset = iconSize / 2;
   
   return {
-    x: radius + distance * Math.cos(middleAngle) - 30,
-    y: radius + distance * Math.sin(middleAngle) - 30
+    x: radius + distance * Math.cos(middleAngle) - offset,
+    y: radius + distance * Math.sin(middleAngle) - offset,
+    size: iconSize
   };
 };
 
@@ -247,8 +256,8 @@ export function RouletteWheel({
                   <foreignObject
                     x={giftPos.x}
                     y={giftPos.y}
-                    width="60"
-                    height="60"
+                    width={giftPos.size}
+                    height={giftPos.size}
                   >
                     <motion.div 
                       className="w-full h-full rounded-full bg-cream-light/95 flex items-center justify-center shadow-lg border-2 border-accent/40 relative"
@@ -276,7 +285,7 @@ export function RouletteWheel({
                         </div>
                       )}
                       <motion.span 
-                        className="text-3xl"
+                        className={items.length <= 2 ? "text-2xl" : "text-3xl"}
                         style={{ opacity: item.weight === 0 ? 0.3 : 1 }}
                         animate={isSpinning ? {
                           rotate: [0, -15, 15, 0],

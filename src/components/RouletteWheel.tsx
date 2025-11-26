@@ -70,15 +70,12 @@ const createSegmentPath = (index: number, total: number, radius: number = 200) =
 // Função para calcular posição do ícone no SVG
 const getGiftPosition = (index: number, total: number, radius: number = 200) => {
   const segmentAngle = 360 / total;
-  const middleAngleDeg = index * segmentAngle + segmentAngle / 2;
-  const middleAngleRad = (middleAngleDeg - 90) * (Math.PI / 180);
-  
-  const distance = radius * 0.55; // 55% do centro até a borda
+  const middleAngle = index * segmentAngle + segmentAngle / 2;
+  const distance = radius * 0.65; // 65% do centro até a borda
   
   return {
-    x: radius + distance * Math.cos(middleAngleRad),
-    y: radius + distance * Math.sin(middleAngleRad),
-    angle: middleAngleDeg // para contra-rotação
+    angle: middleAngle,
+    distance: distance
   };
 };
 
@@ -250,41 +247,44 @@ export function RouletteWheel({
               return (
                 <g 
                   key={`gift-${item.id}`} 
-                  transform={`rotate(${-pos.angle} 200 200)`}
+                  transform={`translate(200, 200) rotate(${pos.angle}) translate(0, ${-pos.distance})`}
                 >
-                  {/* Círculo de fundo */}
-                  <circle
-                    cx={pos.x}
-                    cy={pos.y}
-                    r="28"
-                    fill="#FFFBF5"
-                    stroke="#D4A574"
-                    strokeWidth="2"
-                    opacity={item.weight === 0 ? 0.4 : 1}
-                  />
-                  {/* Emoji do presente */}
-                  <text
-                    x={pos.x}
-                    y={pos.y}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    fontSize="28"
-                    opacity={item.weight === 0 ? 0.3 : 1}
-                  >
-                    🎁
-                  </text>
-                  {/* Emoji de bloqueado se peso = 0 */}
-                  {item.weight === 0 && (
+                  {/* Grupo interno com contra-rotação para manter reto */}
+                  <g transform={`rotate(${-pos.angle})`}>
+                    {/* Círculo de fundo */}
+                    <circle
+                      cx="0"
+                      cy="0"
+                      r="28"
+                      fill="#FFFBF5"
+                      stroke="#D4A574"
+                      strokeWidth="2"
+                      opacity={item.weight === 0 ? 0.4 : 1}
+                    />
+                    {/* Emoji do presente */}
                     <text
-                      x={pos.x}
-                      y={pos.y}
+                      x="0"
+                      y="0"
                       textAnchor="middle"
                       dominantBaseline="central"
-                      fontSize="24"
+                      fontSize="28"
+                      opacity={item.weight === 0 ? 0.3 : 1}
                     >
-                      🚫
+                      🎁
                     </text>
-                  )}
+                    {/* Emoji de bloqueado se peso = 0 */}
+                    {item.weight === 0 && (
+                      <text
+                        x="0"
+                        y="0"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        fontSize="24"
+                      >
+                        🚫
+                      </text>
+                    )}
+                  </g>
                 </g>
               );
             })}

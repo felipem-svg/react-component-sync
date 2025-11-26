@@ -272,34 +272,41 @@ export function RouletteWheel({
               return (
                 <motion.div
                   key={item.id}
-                  className="absolute w-14 h-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cream-light/95 flex items-center justify-center shadow-lg border-2 border-accent/40"
+                  className="absolute w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cream-light/95 flex items-center justify-center shadow-lg border-2 sm:border-3 border-accent/40"
                   style={{
                     left: `${pos.left}%`,
                     top: `${pos.top}%`,
                     filter: 'drop-shadow(0 2px 6px rgba(26,15,18,0.3))',
                     opacity: item.weight === 0 ? 0.4 : 1
                   }}
-                  animate={isSpinning ? {
-                    scale: [1, 1.15, 1],
-                    rotate: [0, 10, -10, 0],
-                  } : {
-                    scale: 1,
-                    rotate: 0
+                  animate={{
+                    rotate: -rotation, // Contra-rotação para manter na vertical
+                    ...(isSpinning ? {
+                      scale: [1, 1.15, 1],
+                    } : {
+                      scale: 1,
+                    })
                   }}
                   transition={{
-                    duration: 0.6,
-                    repeat: isSpinning ? Infinity : 0,
-                    delay: index * 0.1,
-                    ease: "easeInOut"
+                    rotate: {
+                      duration: 4,
+                      ease: [0.17, 0.67, 0.12, 0.99],
+                    },
+                    scale: {
+                      duration: 0.6,
+                      repeat: isSpinning ? Infinity : 0,
+                      delay: index * 0.1,
+                      ease: "easeInOut"
+                    }
                   }}
                 >
                   {item.weight === 0 && (
-                    <div className="absolute inset-0 flex items-center justify-center text-2xl z-10">
+                    <div className="absolute inset-0 flex items-center justify-center text-2xl sm:text-3xl lg:text-4xl z-10">
                       🚫
                     </div>
                   )}
                   <motion.span 
-                    className="text-3xl"
+                    className="text-3xl sm:text-4xl lg:text-5xl"
                     style={{ opacity: item.weight === 0 ? 0.3 : 1 }}
                     animate={isSpinning ? {
                       rotate: [0, -15, 15, 0],

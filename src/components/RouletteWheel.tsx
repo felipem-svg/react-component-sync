@@ -272,11 +272,11 @@ export function RouletteWheel({
               return (
                 <motion.div
                   key={item.id}
-                  className="absolute w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cream-light/95 flex items-center justify-center shadow-lg border-2 sm:border-3 border-accent/40"
+                  className="absolute w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full bg-cream-light/95 flex items-center justify-center shadow-lg border-2 sm:border-3 border-accent/40"
                   style={{
                     left: `${pos.left}%`,
                     top: `${pos.top}%`,
-                    transform: `rotate(${-rotation}deg)`,
+                    transform: `translate(-50%, -50%) rotate(${-rotation}deg)`,
                     filter: 'drop-shadow(0 2px 6px rgba(26,15,18,0.3))',
                     opacity: item.weight === 0 ? 0.4 : 1
                   }}

@@ -72,12 +72,12 @@ const getGiftPosition = (index: number, total: number, radius: number = 200) => 
   const middleAngle = (index + 0.5) * angle - Math.PI / 2;
   
   // Ajustar distância baseado no número de segmentos
-  // Poucos segmentos = presentes mais perto do centro
-  const baseDistance = total <= 2 ? 0.35 : total <= 4 ? 0.45 : 0.55;
+  // 2 segmentos precisam de mais distância para ficar bem posicionados
+  const baseDistance = total <= 2 ? 0.55 : total <= 4 ? 0.50 : 0.55;
   const distance = radius * baseDistance;
   
-  // Tamanho do ícone também ajustado
-  const iconSize = total <= 2 ? 50 : 60;
+  // Tamanho do ícone maior para melhor visibilidade
+  const iconSize = 60;
   const offset = iconSize / 2;
   
   return {
@@ -285,7 +285,7 @@ export function RouletteWheel({
                         </div>
                       )}
                       <motion.span 
-                        className={items.length <= 2 ? "text-2xl" : "text-3xl"}
+                        className="text-3xl"
                         style={{ opacity: item.weight === 0 ? 0.3 : 1 }}
                         animate={isSpinning ? {
                           rotate: [0, -15, 15, 0],

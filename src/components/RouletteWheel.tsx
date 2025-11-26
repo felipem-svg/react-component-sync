@@ -67,18 +67,18 @@ const createSegmentPath = (index: number, total: number, radius: number = 200) =
   return `M ${radius} ${radius} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
 };
 
-// Nova função para calcular posição em percentagens (para HTML overlay)
-const getGiftPositionPercent = (index: number, total: number) => {
-  const angle = (360 / total) * (Math.PI / 180);
-  const middleAngle = (index + 0.5) * angle - Math.PI / 2;
+// Função para calcular posição do ícone no SVG
+const getGiftPosition = (index: number, total: number, radius: number = 200) => {
+  const segmentAngle = 360 / total;
+  const middleAngleDeg = index * segmentAngle + segmentAngle / 2;
+  const middleAngleRad = (middleAngleDeg - 90) * (Math.PI / 180);
   
-  // Ajustar distância baseado no número de segmentos
-  const baseDistance = total <= 2 ? 0.55 : total <= 4 ? 0.50 : 0.55;
+  const distance = radius * 0.55; // 55% do centro até a borda
   
-  // Retorna percentagens do centro (50%) + offset
   return {
-    left: 50 + baseDistance * 50 * Math.cos(middleAngle),
-    top: 50 + baseDistance * 50 * Math.sin(middleAngle)
+    x: radius + distance * Math.cos(middleAngleRad),
+    y: radius + distance * Math.sin(middleAngleRad),
+    angle: middleAngleDeg // para contra-rotação
   };
 };
 
@@ -244,6 +244,51 @@ export function RouletteWheel({
               />
             ))}
             
+            {/* Gift icons com contra-rotação DENTRO do SVG */}
+            {items.map((item, index) => {
+              const pos = getGiftPosition(index, items.length, 200);
+              return (
+                <g 
+                  key={`gift-${item.id}`} 
+                  transform={`rotate(${-pos.angle} 200 200)`}
+                >
+                  {/* Círculo de fundo */}
+                  <circle
+                    cx={pos.x}
+                    cy={pos.y}
+                    r="28"
+                    fill="#FFFBF5"
+                    stroke="#D4A574"
+                    strokeWidth="2"
+                    opacity={item.weight === 0 ? 0.4 : 1}
+                  />
+                  {/* Emoji do presente */}
+                  <text
+                    x={pos.x}
+                    y={pos.y}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize="28"
+                    opacity={item.weight === 0 ? 0.3 : 1}
+                  >
+                    🎁
+                  </text>
+                  {/* Emoji de bloqueado se peso = 0 */}
+                  {item.weight === 0 && (
+                    <text
+                      x={pos.x}
+                      y={pos.y}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      fontSize="24"
+                    >
+                      🚫
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+            
             {/* Center circle - must be last for proper z-index */}
             <circle 
               cx="200" 
@@ -257,69 +302,6 @@ export function RouletteWheel({
               }}
             />
           </motion.svg>
-
-          {/* HTML Overlay com os presentes (sincronizado com o SVG) */}
-          <motion.div
-            className="absolute inset-0 rounded-full pointer-events-none"
-            animate={{ rotate: rotation }}
-            transition={{
-              duration: 4,
-              ease: [0.17, 0.67, 0.12, 0.99],
-            }}
-          >
-            {items.map((item, index) => {
-              const pos = getGiftPositionPercent(index, items.length);
-              return (
-                <motion.div
-                  key={item.id}
-                  className="absolute w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full bg-cream-light/95 flex items-center justify-center shadow-lg border-2 sm:border-3 border-accent/40"
-                  style={{
-                    left: `${pos.left}%`,
-                    top: `${pos.top}%`,
-                    transform: `translate(-50%, -50%) rotate(${-rotation}deg)`,
-                    filter: 'drop-shadow(0 2px 6px rgba(26,15,18,0.3))',
-                    opacity: item.weight === 0 ? 0.4 : 1
-                  }}
-                  animate={isSpinning ? {
-                    scale: [1, 1.15, 1],
-                  } : {
-                    scale: 1,
-                  }}
-                  transition={{
-                    scale: {
-                      duration: 0.6,
-                      repeat: isSpinning ? Infinity : 0,
-                      delay: index * 0.1,
-                      ease: "easeInOut"
-                    }
-                  }}
-                >
-                  {item.weight === 0 && (
-                    <div className="absolute inset-0 flex items-center justify-center text-2xl sm:text-3xl lg:text-4xl z-10">
-                      🚫
-                    </div>
-                  )}
-                  <motion.span 
-                    className="text-3xl sm:text-4xl lg:text-5xl"
-                    style={{ opacity: item.weight === 0 ? 0.3 : 1 }}
-                    animate={isSpinning ? {
-                      rotate: [0, -15, 15, 0],
-                    } : {
-                      rotate: 0
-                    }}
-                    transition={{
-                      duration: 0.4,
-                      repeat: isSpinning ? Infinity : 0,
-                      delay: index * 0.1 + 0.2,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    🎁
-                  </motion.span>
-                </motion.div>
-              );
-            })}
-          </motion.div>
         </div>
       </motion.div>
 

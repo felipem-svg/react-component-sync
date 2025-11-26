@@ -70,11 +70,11 @@ const createSegmentPath = (index: number, total: number, radius: number = 200) =
 const getGiftPosition = (index: number, total: number, radius: number = 200) => {
   const angle = (360 / total) * (Math.PI / 180);
   const middleAngle = (index + 0.5) * angle - Math.PI / 2;
-  const distance = radius * 0.65;
+  const distance = radius * 0.55;
   
   return {
-    x: radius + distance * Math.cos(middleAngle) - 40,
-    y: radius + distance * Math.sin(middleAngle) - 40
+    x: radius + distance * Math.cos(middleAngle) - 30,
+    y: radius + distance * Math.sin(middleAngle) - 30
   };
 };
 
@@ -247,8 +247,8 @@ export function RouletteWheel({
                   <foreignObject
                     x={giftPos.x}
                     y={giftPos.y}
-                    width="80"
-                    height="80"
+                    width="60"
+                    height="60"
                   >
                     <motion.div 
                       className="w-full h-full rounded-full bg-cream-light/95 flex items-center justify-center shadow-lg border-2 border-accent/40 relative"
@@ -271,12 +271,12 @@ export function RouletteWheel({
                       }}
                     >
                       {item.weight === 0 && (
-                        <div className="absolute inset-0 flex items-center justify-center text-4xl z-10">
+                        <div className="absolute inset-0 flex items-center justify-center text-2xl z-10">
                           🚫
                         </div>
                       )}
                       <motion.span 
-                        className="text-5xl"
+                        className="text-3xl"
                         style={{ opacity: item.weight === 0 ? 0.3 : 1 }}
                         animate={isSpinning ? {
                           rotate: [0, -15, 15, 0],

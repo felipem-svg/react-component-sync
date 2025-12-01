@@ -234,7 +234,6 @@ export function RouletteWheel({
                 fill={`url(#gradient-${index})`}
                 stroke="#F5E6D3"
                 strokeWidth="3"
-                opacity={item.weight === 0 ? 0.4 : 1}
                 style={{
                   filter: 'drop-shadow(0 2px 4px rgba(26,15,18,0.3))'
                 }}

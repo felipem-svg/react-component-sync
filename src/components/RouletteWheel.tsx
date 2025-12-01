@@ -259,7 +259,6 @@ export function RouletteWheel({
                       fill="#FFFBF5"
                       stroke="#D4A574"
                       strokeWidth="2"
-                      opacity={item.weight === 0 ? 0.4 : 1}
                     />
                     {/* Emoji do presente */}
                     <text
@@ -268,22 +267,9 @@ export function RouletteWheel({
                       textAnchor="middle"
                       dominantBaseline="central"
                       fontSize="28"
-                      opacity={item.weight === 0 ? 0.3 : 1}
                     >
                       🎁
                     </text>
-                    {/* Emoji de bloqueado se peso = 0 */}
-                    {item.weight === 0 && (
-                      <text
-                        x="0"
-                        y="0"
-                        textAnchor="middle"
-                        dominantBaseline="central"
-                        fontSize="24"
-                      >
-                        🚫
-                      </text>
-                    )}
                   </g>
                 </g>
               );
